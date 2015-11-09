@@ -216,6 +216,7 @@ function drawChart(data, cntry){
   svg.selectAll("bar")
       .data(data)
     .enter().append("rect")
+      .attr("class", "bar")
       .style("fill", "#1BBECF")
       .attr("x", function(d) { return x(d.date); })
       .attr("width", function(){ if(vpwidth > 950){return 3;} else return 6; })
@@ -254,7 +255,7 @@ function drawChart(data, cntry){
       .attr("width", width)
       .attr("height", height)
       .on("mouseover", function() { focus.style("display", null);})
-      .on("mouseout", function() { focus.style("display", "none");})
+      .on("mouseout", function() { d3.selectAll(".focus").style("display", "none");})
       .on("mousemove", mousemove)
       .on("click", mousemove);
 
@@ -266,15 +267,20 @@ function drawChart(data, cntry){
         d0 = data[i - 1],
         d1 = data[i],
         d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+    var all = d3.selectAll(".cont").selectAll(".bar");
+    for(var z = 0; z < all.length; z++){
+      var allDivs = all[z].parentNode;
+      var allFocus = d3.select(allDivs).select(".focus");
+      var allDateDivs = d3.select(allDivs).select(".date");
+      var allAmmounts = d3.select(allDivs).select(".amount");
 
-    //tip.style("top", y(d.value) - 33 + "px").style("left", x(d.date) + 28 + "px");
-    dateDiv.html((d.date).getDate() + " " + monthsArr[(d.date).getMonth()] + " " + (d.date).getFullYear());
-    amount.html(isNaN(d.value) ? "N/A" : format(d.value));
-    //perc.html((d.perc).toFixed(2) + "%");
-    //fillBar.style("width", (d.perc).toFixed(2) + "%");
-
-    isNaN(d.value) ? focus.attr("transform", "translate(" + (x(d.date) + 1.5) + "," + y(0) + ")") :
-      focus.attr("transform", "translate(" + (x(d.date) + 1.5) + "," + y(d.value) + ")");
+      allFocus.style("display", null);
+      console.log(all[z][i].__data__);
+      isNaN(all[z][i].__data__.value) ? allFocus.attr("transform", "translate(" + (x(all[z][i].__data__.date) + 1.5) + "," + y(0) + ")") :
+        allFocus.attr("transform", "translate(" + (x(all[z][i].__data__.date) + 1.5) + "," + y(all[z][i].__data__.value) + ")");
+      allDateDivs.html((all[z][i].__data__.date).getDate() + " " + monthsArr[(all[z][i].__data__.date).getMonth()] + " " + (all[z][i].__data__.date).getFullYear());
+      allAmmounts.html(isNaN(all[z][i].__data__.value) ? "N/A" : format(all[z][i].__data__.value));
+    }
   }
 }
 
