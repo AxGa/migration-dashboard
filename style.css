@@ -1,0 +1,173 @@
+body {
+  font-family: "zona_prothin", Arial, serif;
+}
+
+#placeholder{
+  width: 100%;
+}
+
+.cont{
+  width: 33%;
+  float: left;
+}
+
+.axisY{
+  position: absolute;
+  background-color: #fff;
+  width: 42px;
+  height: 300px;
+}
+
+.axis {
+  font-size: 10px;
+  stroke-width: 0.5;
+}
+.y{
+  fill: #999;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #999;
+  shape-rendering: crispEdges;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+  stroke: none !important;
+}
+
+.focus circle {
+  fill: none;
+  stroke: #EC1D46;
+  stroke-width: 2px;
+}
+
+.infoBox{
+  background-color: #ededed;
+  padding: 5px 0 5px 5px;
+  border-radius: 2px;
+  width: 97%;
+  margin-bottom: 5px;
+  margin-left: 15px;
+  height: 38px;
+}
+
+.date{
+  padding-left: 2%;
+  font-size: 14px;
+  font-weight: 500;
+  float: left;
+  width: 35%;
+  color: #01626A;
+}
+
+.amLab{
+  font-size: 14px;
+  color: #01626A;
+  font-family: "robotobold", Arial;
+}
+
+.amount{
+  color: #1BBECF;
+  font-family: "robotobold", Arial;
+}
+
+.percLab{
+  font-size: 14px;
+  color: #01626A;
+}
+
+.amountDiv{
+  font-size: 18px;
+  float: left;
+  width: 28%;
+  border-left: 1px solid #333;
+  padding-left: 2%;
+}
+
+.countryLab{
+    font-size: 18px;
+    float: right;
+    color: #353535;
+    padding-right: 3px;
+}
+
+.percDiv{
+  padding-left: 2%;
+  font-size: 21px;
+  width: 28%;
+  display: inline-block;
+  border-left: 1px solid #333;
+}
+
+.perc{
+  float: left;
+  color: #005689;
+}
+
+.outerBar{
+  background-color: #fff;
+  height: 15px;
+  width: 55%;
+  margin-left: 80px;
+  margin-top: 2px;
+}
+
+.fillBar{
+  height: 15px;
+  background-color: #1BBECF;
+  -webkit-transition: width 0.2s linear;
+  -moz-transition: width 0.2s linear;
+  -o-transition: width 0.2s linear;
+  transition: width 0.2s linear;
+}
+
+.outOf{
+  font-size: 12px;
+  clear: both;
+  color: #005689;
+}
+
+.sources{
+  font-size: 13px;
+  color: #767676;
+}
+
+.clear{
+  clear: both;
+}
+
+@media (max-width: 460px) {
+  body{
+    width: 300px;
+  }
+  
+  .date{
+    width: 75%;
+    float: none;
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+
+   .amountDiv{
+    font-size: 26px;
+    float: left;
+    width: 40%;
+    border-left: 0px;
+    padding-left: 2%;
+  }
+
+  .amLab{
+    font-size: 13px;
+  }
+
+  .percDiv{
+    padding-left: 3%;
+    font-size: 18px;
+    width: 49%;
+    float: left;
+    border-left: 1px solid #333;
+  }
+}
