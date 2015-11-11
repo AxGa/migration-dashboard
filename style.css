@@ -1,4 +1,4 @@
-body {
+body,.pure-g [class *="pure-u"] {
   font-family: "zona_prothin", Arial, serif;
 }
 
@@ -13,7 +13,7 @@ body {
 
 .axisY{
   position: absolute;
-  background-color: #fff;
+  /*background-color: #fff;*/
   width: 42px;
   height: 300px;
 }
@@ -35,12 +35,14 @@ body {
 .overlay {
   fill: none;
   pointer-events: all;
+  /*cursor:crosshair;*/
   stroke: none !important;
 }
 
 .focus circle {
   fill: none;
   stroke: #EC1D46;
+  /*stroke:#fcb615;*/
   stroke-width: 2px;
 }
 
@@ -48,7 +50,8 @@ body {
   background-color: #ededed;
   padding: 5px 0 5px 5px;
   border-radius: 2px;
-  width: 97%;
+  width: calc(100% - 35px);
+  margin-top: 10px;
   margin-bottom: 5px;
   margin-left: 15px;
   height: 38px;
@@ -82,7 +85,7 @@ body {
 .amountDiv{
   font-size: 18px;
   float: left;
-  width: 28%;
+  max-width: 28%;
   border-left: 1px solid #333;
   padding-left: 2%;
 }
@@ -139,10 +142,48 @@ body {
   clear: both;
 }
 
+
+.header h1{
+-webkit-animation: text-pulse 1.5s ease-out;
+-webkit-animation-iteration-count: infinite;
+}
+.l-box{min-height:300px;background-color:none;margin:2px;border:2px solid transparent;box-sizing:border-box;border-radius:0px;}
+.l-box h3{font-size:2.5em;padding:0px 10px;}
+.l-box p{padding:10px;font-size:17px;}
+.pure-g:nth-child(even) .l-box{ border:2px solid transparent;}
+.pure-g:nth-child(odd) > div:nth-child(1) .l-box{background-color:#1BBECF;}
+.pure-g:nth-child(even) > div:nth-child(1) .l-box{background-color:#fcb615;}
+path.domain{fill:none;stroke:#000;stroke-width:1px;shape-rendering:crispEdges;}
+.axis text{font-size:12px;}
+.axis.x .tick text{text-anchor:start!important;}
+.axis.y path.domain{stroke:none;}
+
+@-webkit-keyframes text-pulse {
+  0% {-webkit-transform: text-shadow:red 0px 0px 10px;}
+  50% {text-shadow:red 0px 0px 10px;}
+  100% {-webkit-transform: text-shadow:red 0px 0px 10px;}
+}
+
+
+
+@-webkit-keyframes pulse {
+  0% {-webkit-transform: stroke-width:5px;}
+  50% {stroke-width:0px;}
+  100% {-webkit-transform:stroke-width:5px;}
+}
+
+.pulse{
+    fill:red;
+    stroke:black;
+    -webkit-animation: pulse 1s ease-out;
+    -webkit-animation-iteration-count: infinite;
+}
+
+
 @media (max-width: 460px) {
-  body{
+  /*body{
     width: 300px;
-  }
+  }*/
   
   .date{
     width: 75%;

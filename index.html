@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="fonts/stylesheet.css" type="text/css" charset="utf-8" />
-  <link rel='stylesheet' href='style.css'>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="fonts/stylesheet.css" type="text/css" charset="utf-8" />
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-min.css">
+    <link rel='stylesheet' href='style.css'>
 
 </head>
 
@@ -13,276 +15,330 @@
 <script src="d3.v3.min.js"></script>
 <script src="jquery-1.11.1.min.js"></script>
 <script lang="javascript" src="xlsx.core.min.js"></script>
+
+<div class="header" style="text-align:center;">
+    <h1>Live data</h1>
+</div>
+
+<div class="content">
+</div>
+
 <script>
-var dataset = {};
-var dt = {};
-var worksheet,csvFile,y,max;
-var vpwidth = $(window).width();
-var placeholder = d3.select("body").append("div").attr("id", "placeholder");
-var today = new Date();
-today.setHours(0,0,0,0);
 
-var clientWidth = document.getElementById('placeholder').clientWidth;
-var margin = {top: 20, right: 20, bottom: 40, left: 42},
-    width = (clientWidth - margin.left - margin.right)/3.3,
-    height = 300 - margin.top - margin.bottom;
-var monthsArr = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-var si = d3.format("s");
-// Parse the date / time
-var	parseDate = d3.time.format("%m/%d/%y").parse;
-var x = d3.time.scale().range([0, width]);
-var xMonth = d3.time.scale()
-    .range([0, width]);
+function toTitleCase(str){
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+};
 
-d3.select(window)
-      .on("resize", sizeChange);
+$.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
+    console.log(sheet.result);
 
-function sizeChange(){
-  
-  //if(vpwidth > 900){
-    //d3.select("#svgCont").style("overflow-x", "visible");
-    clientWidth = document.getElementById('placeholder').clientWidth;
-    width = (clientWidth - margin.left - margin.right)/3.3;
-    x.range([0, width]);
-    xMonth.range([0, width]);
-    drawChart(dt.greece, "greece");
-    drawChart(dt.fyrom, "fyrom");
-    drawChart(dt.serbia, "serbia");
-    drawChart(dt.croatia, "croatia");
-    drawChart(dt.hungary, "hungary");
-    drawChart(dt.slovenia, "slovenia");
-    drawChart(dt.austria, "austria");
-    drawChart(dt.germany, "germany");
-    vpwidth = $(window).width();
-  //}
-/*  else{
-    d3.select("#svgCont").style("overflow-x", "scroll").style("overflow-y", "hidden");
-    width = 2200;
-    x.range([0, width]);
-    xMonth.range([0, width]);
-    drawChart(dataset);
-    vpwidth = $(window).width();
-  }*/
-  
-}
+    sheet = d3.nest()
+    .key(function(d) { return d.theme})
+    .sortKeys(d3.ascending)
+    .entries(sheet.result);
+    
+    var divrows = d3.select(".content").selectAll('div.pure-g').data(sheet).enter().append("div").attr({class:'pure-g'});
 
-//DATA PARSING XLS
-/* set up XMLHttpRequest */
-var url = "http://data.unhcr.org/data_sources/mediterranean/balkans.xls";
-var oReq = new XMLHttpRequest();
-oReq.open("GET", url, true);
-oReq.responseType = "arraybuffer";
+    var cards = divrows.selectAll('div.pure-u-1.pure-u-sm-1-2.pure-u-md-1-2.pure-u-lg-1-3.pure-u-xl-1-4').data(function(d,i){return d.values});
+    cards.enter().append('div')
+    .attr({
+        class:'pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4'
+    });
 
-oReq.onload = function(e) {
-  var arraybuffer = oReq.response;
+    var inners = cards.append('div').attr({class:function(d,i){return i == 0 ? ('l-box full ' + d.type + ' ' + d.theme.replace(/ /g,"")):('l-box ' + d.type + ' ' + d.theme.replace(/ /g,""))}});
 
-  /* convert data to binary string */
-  var data = new Uint8Array(arraybuffer);
-  var arr = new Array();
-  for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-  var bstr = arr.join("");
+    var headers = inners.filter(function(d){return d.type == "intro"}).append("h3").html(function(d){return toTitleCase(d.theme)});
 
-  /* Call XLSX */
-  var workbook = XLSX.read(bstr, {type:"binary"});
+    var intros = inners.filter(function(d){return d.type == "intro"}).append("p").html(function(d){return d.content});
 
-  var first_sheet_name = workbook.SheetNames[0];
-  worksheet = workbook.Sheets[first_sheet_name];
-  csvFile = XLSX.utils.sheet_to_csv(worksheet);
-  parseCsv(csvFile);
-}
+    console.log(d3.select('.l-box').node().getBoundingClientRect());
 
-oReq.send();
+    var dataset = {};
+    var dt = {};
+    var worksheet,csvFile,y,max;
+    // var vpwidth = $(window).width();
+    // var placeholder = d3.select("body").append("div").attr("id", "placeholder");
+    var today = new Date();
+    today.setHours(0,0,0,0);
 
-function parseCsv (csvData) {
-  var cleanCsv = csvData.split('\n').slice(1).join('\n');
+    // var clientWidth = document.getElementById('placeholder').clientWidth;
+    var margin = {top: 20, right: 25, bottom: 120, left: 42, base:30},
+        width = d3.select('.l-box').node().getBoundingClientRect().width-(margin.left+margin.right+4),
+        height = d3.select('.l-box').node().getBoundingClientRect().height-(margin.bottom+margin.base);
+    var monthsArr = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var si = d3.format("s");
+    // Parse the date / time
+    var parseDate = d3.time.format("%m/%d/%y").parse;
+    var x = d3.time.scale().range([0, width]);
+    var xMonth = d3.time.scale()
+        .range([0, width]);
 
-  dataset = d3.csv.parse(cleanCsv, function(d) {
-      return {
-          greece: +d.GRC.replace(/,/g, ''),
-          fyrom: +d.MKD.replace(/,/g, ''),
-          serbia: +d.SRB.replace(/,/g, ''),
-          croatia: +d.HRV.replace(/,/g, ''),
-          hungary: +d.HUN.replace(/,/g, ''),
-          slovenia: +d.SVN.replace(/,/g, ''),
-          austria: +d.AUT.replace(/,/g, ''),
-          germany: +d.DEU.replace(/,/g, ''),
-          date: parseDate(d.Date)
-      };
-  });
-  for(var k in dataset[0]) {
-    if(k != "date") {
-      dt[k] = dataset.map(function(d){
-         return {
-          value: d[k],
-          date: d.date
+    d3.select(window)
+          .on("resize", sizeChange);
+
+    function sizeChange(){
+      
+      //if(vpwidth > 900){
+        //d3.select("#svgCont").style("overflow-x", "visible");
+        // clientWidth = document.getElementById('placeholder').clientWidth;
+        width = d3.select('.l-box').node().getBoundingClientRect().width-(margin.left+margin.right+4),
+        height = d3.select('.l-box').node().getBoundingClientRect().height-margin.bottom;
+        x.range([0, width]);
+        xMonth.range([0, width]);
+        drawChart(dt.greece, "greece");
+        drawChart(dt.fyrom, "fyrom");
+        drawChart(dt.serbia, "serbia");
+        drawChart(dt.croatia, "croatia");
+        drawChart(dt.hungary, "hungary");
+        drawChart(dt.slovenia, "slovenia");
+        drawChart(dt.austria, "austria");
+        drawChart(dt.germany, "germany");
+        // vpwidth = $(window).width();
+      //}
+    /*  else{
+        d3.select("#svgCont").style("overflow-x", "scroll").style("overflow-y", "hidden");
+        width = 2200;
+        x.range([0, width]);
+        xMonth.range([0, width]);
+        drawChart(dataset);
+        vpwidth = $(window).width();
+      }*/
+      
+    }
+
+    //DATA PARSING XLS
+    /* set up XMLHttpRequest */
+    var url = "http://data.unhcr.org/data_sources/mediterranean/balkans.xls";
+    var oReq = new XMLHttpRequest();
+    oReq.open("GET", url, true);
+    oReq.responseType = "arraybuffer";
+
+    oReq.onload = function(e) {
+      var arraybuffer = oReq.response;
+
+      /* convert data to binary string */
+      var data = new Uint8Array(arraybuffer);
+      var arr = new Array();
+      for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+      var bstr = arr.join("");
+
+      /* Call XLSX */
+      var workbook = XLSX.read(bstr, {type:"binary"});
+
+      var first_sheet_name = workbook.SheetNames[0];
+      worksheet = workbook.Sheets[first_sheet_name];
+      csvFile = XLSX.utils.sheet_to_csv(worksheet);
+      parseCsv(csvFile);
+    }
+
+    oReq.send();
+
+    function parseCsv (csvData) {
+      var cleanCsv = csvData.split('\n').slice(1).join('\n');
+
+      dataset = d3.csv.parse(cleanCsv, function(d) {
+          return {
+              greece: +d.GRC.replace(/,/g, ''),
+              fyrom: +d.MKD.replace(/,/g, ''),
+              serbia: +d.SRB.replace(/,/g, ''),
+              croatia: +d.HRV.replace(/,/g, ''),
+              hungary: +d.HUN.replace(/,/g, ''),
+              slovenia: +d.SVN.replace(/,/g, ''),
+              austria: +d.AUT.replace(/,/g, ''),
+              germany: +d.DEU.replace(/,/g, ''),
+              date: parseDate(d.Date)
+          };
+      });
+      for(var k in dataset[0]) {
+        if(k != "date") {
+          dt[k] = dataset.map(function(d){
+            // console.log(d.date)
+             return {
+              value: d[k],
+              date: d.date
+            }
+          })
+          dt[k] = dt[k].filter(function(d){
+            return d.date > new Date(2015,8,1);
+          })
         }
-      })
+      }
+      max = d3.max(d3.entries(dataset), function(d){return d3.max(d3.entries(d.value), function(e){return typeof(e.value) == "number" ? e.value : 0;})});
+      sizeChange();
     }
-  }
-  max = d3.max(d3.entries(dataset), function(d){return d3.max(d3.entries(d.value), function(e){return typeof(e.value) == "number" ? e.value : 0;})});
-  sizeChange();
-}
 
 
 
-function drawChart(data, cntry){
-  var bisectDate = d3.bisector(function(d) { return d.date; }).left;
-  var format = d3.format(",d");
-  y = d3.scale.linear().range([height, 0]);
-  y.domain([0, max]);
-  var xAxis = d3.svg.axis()
-      .scale(x)
-      .orient("bottom")
-      .ticks(20)
-      .tickFormat(d3.time.format("%d"));
+    function drawChart(data, cntry){
+      var bisectDate = d3.bisector(function(d) { return d.date; }).left;
+      var format = d3.format(",d");
+      y = d3.scale.linear().range([height, 0]);
+      y.domain([0, max]);
+      var xAxis = d3.svg.axis()
+          .scale(x)
+          .orient("bottom")
+          .ticks(width < 250 ? 5:10)
+          .tickFormat(d3.time.format("%d"));
 
-  var xAxisMonth = d3.svg.axis()
-      .scale(xMonth)
-      .orient("bottom")
-      .ticks(d3.time.months)
-      .tickSize(30, 0)
-      .tickFormat(d3.time.format("%B" + " '15"));
+      var xAxisMonth = d3.svg.axis()
+          .scale(xMonth)
+          .orient("bottom")
+          .ticks(d3.time.months)
+          .tickSize(30, 0)
+          .tickFormat(d3.time.format("%b" + " '15"));
 
-  var yAxis = d3.svg.axis()
-      .scale(y)
-      .orient("left")
-      .ticks(10)
-      .tickFormat(function(d) { return si(d).replace(/G/, 'bn'); });
-  var todayMonth = today.getMonth();
-  var todayDay = today.getDate();
-  var todayIndx;
-  for (var i=0; i<data.length; i++){
-    var month = data[i].date.getMonth();
-    var day = data[i].date.getDate();
-    if( month == todayMonth && day == todayDay){
-      todayIndx = i;
+      var yAxis = d3.svg.axis()
+          .scale(y)
+          .orient("left")
+          .ticks(10)
+          .tickFormat(function(d) { return si(d).replace(/G/, 'bn'); });
+      var todayMonth = today.getMonth();
+      var todayDay = today.getDate();
+      var todayIndx;
+      for (var i=0; i<data.length; i++){
+        var month = data[i].date.getMonth();
+        var day = data[i].date.getDate();
+        if( month == todayMonth && day == todayDay){
+          todayIndx = i;
+        }
+      }
+      d3.selectAll(".sources").remove();
+      d3.select("#svg_" + cntry).html("");
+      //d3.selectAll(".infoBox").remove();
+      // var svgCont = d3.select("#placeholder").append("div").attr("id", "svg_" + cntry).attr("class", "cont");
+
+      var svgCont = d3.select(".l-box.dailyarrivals:not(.full)").attr("id", "svg_" + cntry).classed("full",true);
+
+      var infoBox = d3.select("#svg_" + cntry).append("div")
+          .attr("class", "infoBox")
+          .style("font-weight", "bold")
+          .style("font-size", "16px");
+
+      var dateDiv = infoBox.append("div").attr("class", "date");
+      
+      var amountDiv = infoBox.append("div").attr("class", "amountDiv");
+      amountDiv.append("div").attr("class", "amLab").html("Arrivals");
+      var amount = amountDiv.append("div").attr("class", "amount");
+      var countryLab = infoBox.append("div").attr("class", "countryLab").html(cntry.ucfirst());
+    /*  var percDiv = infoBox.append("div").attr("class", "percDiv");
+      percDiv.append("div").attr("class", "percLab").html("Percentage of total aid so far");
+      var perc = percDiv.append("div").attr("class", "perc");
+      
+      var outerBar = percDiv.append("div").attr("class", "outerBar");
+      var fillBar = outerBar.append("div").attr("class", "fillBar");
+      var outOf = percDiv.append("div").attr("class", "outOf");*/
+      infoBox.append("div").attr("class", "clear");
+
+      var axisY = d3.select("#svg_" + cntry).append("div").attr("class", "axisY");
+
+      var svg = d3.select("#svg_" + cntry).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.base)
+      .append("g")
+        .attr("transform", 
+              "translate(" + (margin.left + 2) + "," + margin.top + ")");
+      // x.domain([data[55].date, data[todayIndx].date]);
+      x.domain([new Date(2015,8,1), new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)]);
+      
+      //xAxis.tickValues(x.domain().filter(function(d, i) { return !(i % 7); }));
+      // xMonth.domain([data[55].date, data[todayIndx].date])
+      xMonth.domain([new Date(2015,8,1), new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)]);
+
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis)
+        .selectAll("text")
+          .style("fill", "#999")
+          .style("text-anchor", "middle");
+
+      var monthAxis = svg.append("g")
+          .attr("class", "month axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxisMonth)
+        .selectAll(".tick text")
+          .attr("y", 20)
+          .attr("x", 80 / 2)
+          .style("fill", "#999")
+          .style("text-anchor", "middle");
+
+      d3.select(".month").selectAll(".tick line")
+          .attr("y1", 20);
+
+      axisY.append("svg")
+        .attr("width", 43)
+        .attr("height", height + margin.top + margin.base)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + (margin.top) + ")")
+          .attr("class", "y axis")
+          .call(yAxis)
+        .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("x", -30)
+          .attr("dy", ".71em")
+          .style("fill", "#999")
+          .style("text-anchor", "middle")
+          .text("Amount donated ($)");
+
+      svg.selectAll("bar")
+          .data(data)
+        .enter().append("rect")
+          .attr("class", "bar")
+          .style("fill", "#1BBECF")
+          .attr("x", function(d) { return x(d.date); })
+          // .attr("width", function(){ if(vpwidth > 950){return 3;} else return 6; })
+          .attr("width",width/120)
+          .attr("y", function(d) { return isNaN(d.value) ? y(0) : y(d.value); })
+          .attr("height", function(d) { return isNaN(d.value) ? height-y(0) : height - y(d.value); });
+
+      //--------MOUSEOVER THE CHARTS----------
+      var focus = svg.append("g")
+          .attr("class", "focus")
+          .style("display", "none");
+
+      focus.append("circle")
+          .attr("r", 5.5);
+
+      // console.log("infobox");
+      svg.append("rect")
+          .attr("class", "overlay")
+          .attr("width", width)
+          .attr("height", height)
+          .on("mouseover", function() { focus.style("display", null);})
+          .on("mouseout", function() { d3.selectAll(".focus").style("display", "none");})
+          .on("mousemove", mousemove)
+          .on("click", mousemove);
+
+
+      //focus.attr("transform", "translate(" + 1.5 + "," + y(3800000) + ")");
+      function mousemove() {
+        var x0 = x.invert(d3.mouse(this)[0]),
+            i = bisectDate(data, x0, 1),
+            d0 = data[i - 1],
+            d1 = data[i],
+            d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+            // console.log(d);
+        var all = d3.selectAll(".dailyarrivals.full:not(.intro)").selectAll(".bar");
+        for(var z = 0; z < all.length; z++){
+          var allDivs = all[z].parentNode;
+          // console.log(all);
+          var allFocus = d3.select(allDivs).select(".focus");
+          var allDateDivs = d3.select(allDivs).select(".date");
+          var allAmmounts = d3.select(allDivs).select(".amount");
+
+          allFocus.style("display", null);
+          // console.log(all[z][i]);
+          // console.log(all[z][i].__data__);
+          isNaN(all[z][i].__data__.value) ? allFocus.attr("transform", "translate(" + (x(all[z][i].__data__.date) + 1.5) + "," + y(0) + ")") :
+            allFocus.attr("transform", "translate(" + (x(all[z][i].__data__.date) + 1.5) + "," + y(all[z][i].__data__.value) + ")");
+          allDateDivs.html((all[z][i].__data__.date).getDate() + " " + ( width < 275 ? monthsShort[(all[z][i].__data__.date).getMonth()]:monthsArr[(all[z][i].__data__.date).getMonth()] ) + " " + (all[z][i].__data__.date).getFullYear());
+          allAmmounts.html(isNaN(all[z][i].__data__.value) ? "N/A" : format(all[z][i].__data__.value));
+        }
+      }
     }
-  }
-  d3.selectAll(".sources").remove();
-  d3.select("#svg_" + cntry).remove();
-  //d3.selectAll(".infoBox").remove();
-  var svgCont = d3.select("#placeholder").append("div").attr("id", "svg_" + cntry).attr("class", "cont");
-
-  var axisY = d3.select("#svg_" + cntry).append("div").attr("class", "axisY");
-
-  var svg = d3.select("#svg_" + cntry).append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", 
-          "translate(" + (margin.left + 1) + "," + margin.top + ")");
-  x.domain([data[55].date, data[todayIndx].date]);
-  
-  //xAxis.tickValues(x.domain().filter(function(d, i) { return !(i % 7); }));
-  xMonth.domain([data[55].date, data[todayIndx].date])
-
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
-    .selectAll("text")
-      .style("fill", "#999")
-      .style("text-anchor", "middle");
-
-  var monthAxis = svg.append("g")
-      .attr("class", "month axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxisMonth)
-    .selectAll(".tick text")
-      .attr("y", 20)
-      .attr("x", 80 / 2)
-      .style("fill", "#999")
-      .style("text-anchor", "middle");
-
-  d3.select(".month").selectAll(".tick line")
-      .attr("y1", 20);
-
-  axisY.append("svg")
-    .attr("width", 43)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .attr("class", "y axis")
-      .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("x", -30)
-      .attr("dy", ".71em")
-      .style("fill", "#999")
-      .style("text-anchor", "middle")
-      .text("Amount donated ($)");
-
-  svg.selectAll("bar")
-      .data(data)
-    .enter().append("rect")
-      .attr("class", "bar")
-      .style("fill", "#1BBECF")
-      .attr("x", function(d) { return x(d.date); })
-      .attr("width", function(){ if(vpwidth > 950){return 3;} else return 6; })
-      .attr("y", function(d) { return isNaN(d.value) ? y(0) : y(d.value); })
-      .attr("height", function(d) { return isNaN(d.value) ? height-y(0) : height - y(d.value); });
-
-  //--------MOUSEOVER THE CHARTS----------
-  var focus = svg.append("g")
-      .attr("class", "focus")
-      .style("display", "none");
-
-  focus.append("circle")
-      .attr("r", 5.5);
-
-  var infoBox = svgCont.append("div")
-      .attr("class", "infoBox")
-      .style("font-weight", "bold")
-      .style("font-size", "16px");
-
-  var dateDiv = infoBox.append("div").attr("class", "date");
-  
-  var amountDiv = infoBox.append("div").attr("class", "amountDiv");
-  amountDiv.append("div").attr("class", "amLab").html("Arrivals");
-  var amount = amountDiv.append("div").attr("class", "amount");
-  var countryLab = infoBox.append("div").attr("class", "countryLab").html(cntry.ucfirst());
-/*  var percDiv = infoBox.append("div").attr("class", "percDiv");
-  percDiv.append("div").attr("class", "percLab").html("Percentage of total aid so far");
-  var perc = percDiv.append("div").attr("class", "perc");
-  
-  var outerBar = percDiv.append("div").attr("class", "outerBar");
-  var fillBar = outerBar.append("div").attr("class", "fillBar");
-  var outOf = percDiv.append("div").attr("class", "outOf");*/
-  infoBox.append("div").attr("class", "clear");
-  svg.append("rect")
-      .attr("class", "overlay")
-      .attr("width", width)
-      .attr("height", height)
-      .on("mouseover", function() { focus.style("display", null);})
-      .on("mouseout", function() { d3.selectAll(".focus").style("display", "none");})
-      .on("mousemove", mousemove)
-      .on("click", mousemove);
-
-
-  //focus.attr("transform", "translate(" + 1.5 + "," + y(3800000) + ")");
-  function mousemove() {
-    var x0 = x.invert(d3.mouse(this)[0]),
-        i = bisectDate(data, x0, 1),
-        d0 = data[i - 1],
-        d1 = data[i],
-        d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-    var all = d3.selectAll(".cont").selectAll(".bar");
-    for(var z = 0; z < all.length; z++){
-      var allDivs = all[z].parentNode;
-      var allFocus = d3.select(allDivs).select(".focus");
-      var allDateDivs = d3.select(allDivs).select(".date");
-      var allAmmounts = d3.select(allDivs).select(".amount");
-
-      allFocus.style("display", null);
-      console.log(all[z][i].__data__);
-      isNaN(all[z][i].__data__.value) ? allFocus.attr("transform", "translate(" + (x(all[z][i].__data__.date) + 1.5) + "," + y(0) + ")") :
-        allFocus.attr("transform", "translate(" + (x(all[z][i].__data__.date) + 1.5) + "," + y(all[z][i].__data__.value) + ")");
-      allDateDivs.html((all[z][i].__data__.date).getDate() + " " + monthsArr[(all[z][i].__data__.date).getMonth()] + " " + (all[z][i].__data__.date).getFullYear());
-      allAmmounts.html(isNaN(all[z][i].__data__.value) ? "N/A" : format(all[z][i].__data__.value));
-    }
-  }
-}
+})
 
 String.prototype.ucfirst = function()
 {
