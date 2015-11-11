@@ -17,6 +17,18 @@
 <script lang="javascript" src="xlsx.core.min.js"></script>
 
 <div class="header" style="text-align:center;">
+    <div class="logo">
+        <img src="logo.svg"/>
+        <span>Open </span><span> Migration</span>
+        <div class="swathe">
+            <div>Our mission</div>
+            <div>Right of asylum</div>
+            <div>Border politics</div>
+            <div>Immigration & integration</div>
+            <div>Data</div>
+            <div>Features</div>
+        </div>
+    </div>
     <h1>Live data</h1>
 </div>
 
@@ -42,7 +54,10 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
     var cards = divrows.selectAll('div.pure-u-1.pure-u-sm-1-2.pure-u-md-1-2.pure-u-lg-1-3.pure-u-xl-1-4').data(function(d,i){return d.values});
     cards.enter().append('div')
     .attr({
-        class:'pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4'
+        class: function(d,i){
+            console.log(d)
+            return  (d.content).indexOf("map") > -1 ? 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-2-3 pure-u-xl-3-4':'pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4'
+        }
     });
 
     var inners = cards.append('div').attr({class:function(d,i){return i == 0 ? ('l-box full ' + d.type + ' ' + d.theme.replace(/ /g,"")):('l-box ' + d.type + ' ' + d.theme.replace(/ /g,""))}});

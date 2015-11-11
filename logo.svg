@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 1600 150" style="enable-background:new 0 0 1600 716.5;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#2C4043;stroke-width:2.934;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#FFFFFF;stroke-width:3;stroke-miterlimit:10;}
+	.st2{fill:#353535;}
+	.st3{font-family:'ZonaPro-Bold';}
+	.st4{font-size:26px;}
+	.st5{font-family:'ZonaPro-Thin';}
+	.st6{font-size:51px;}
+	.st7{fill:#EE1D43;}
+	.st8{font-size:53.6133px;}
+	.st9{fill:#EC1B46;}
+	.st10{font-family:'FontAwesome';}
+	.st11{font-size:22.6798px;}
+	.st12{fill:#7E7E7E;}
+	.st13{font-family:'Helvetica';}
+	.st14{font-size:16.6336px;}
+	.st15{font-family:'Helvetica-Bold';}
+	.st16{fill:#2C4143;}
+	.st17{fill:#FFFFFF;}
+	.st18{font-size:19px;}
+	.st19{fill:#E5E8E9;}
+	.st20{fill:#ED1944;}
+	.st21{font-size:35px;}
+	.st22{fill:none;stroke:#000000;stroke-width:1.0057;stroke-miterlimit:10;stroke-dasharray:12.0684;}
+	.st23{font-size:30px;}
+	.st24{fill:#2C4043;}
+	.st25{fill:#151515;}
+	.st26{fill:#A21C35;}
+	.st27{fill:#19BDCE;}
+	.st28{fill:none;stroke:#19BDCE;stroke-width:4;stroke-miterlimit:10;}
+</style>
+<!-- <g xmlns="http://www.w3.org/2000/svg">
+	<rect x="0.1" y="229" class="st9" width="1600" height="80"/>
+	<text transform="matrix(1 0 0 1 1394.5183 272.6602)" class="st7 st10 st11"></text>
+</g> -->
+<g>
+	<polygon class="st16" points="827.7,128 900.1,55.6 900.1,55.6 903.6,42.2 890.2,45.7 817.8,118.1 814.3,131.6 827.7,128  "/>
+	<polygon class="st16" points="807.4,64.7 807.4,64.7 754.4,117.7 750.9,131.1 764.3,127.6 764.3,127.6 817.3,74.6 817.3,74.6    820.1,61.8  "/>
+	<polygon class="st9" points="942,94 930,87 670,87 658,94 670,101 670,101 930,101 930,101  "/>
+	<g>
+		<g>
+			<!-- <text transform="matrix(1 0 0 1 660.7656 187.7897)"><tspan x="0" y="0" class="st20 st3 st23">OPEN </tspan><tspan x="97.9" y="0" class="st24 st3 st23">MIGRATION</tspan></text> -->
+			<g>
+				<g>
+					<polygon class="st25" points="790.9,101 781,110.9 771.1,101      "/>
+				</g>
+				<g>
+					<polygon class="st25" points="854.8,101 844.9,110.9 835,101      "/>
+				</g>
+			</g>
+			<g>
+				<g>
+					<polygon class="st16" points="773.5,64.7 786.3,61.8 783.4,74.6      "/>
+				</g>
+				<g>
+					
+						<rect x="735.3" y="54.6" transform="matrix(0.7071 0.7071 -0.7071 0.7071 292.2345 -493.8966)" class="st16" width="14" height="102.4"/>
+				</g>
+			</g>
+		</g>
+		<g>
+			<polygon class="st26" points="834.6,87 834.6,101 820.7,101    "/>
+		</g>
+		<g>
+			<polygon class="st26" points="771,87 771,101 757,101    "/>
+		</g>
+	</g>
+	<polygon class="st16" points="711.1,147 711.1,146.9 783.4,74.6 783.4,74.6 786.3,61.8 773.5,64.7 701.2,137.1 701.2,137.1    697.6,150.5  "/>
+	<polygon class="st16" points="837.2,64.7 837.2,64.7 784.1,117.7 784.1,117.7 780.6,131.1 794,127.6 847.1,74.6 847.1,74.6    849.9,61.8  "/>
+</g>
+</svg>
