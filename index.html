@@ -22,6 +22,7 @@
 <script src="js/topojson.v1.min.js"></script>
 <script src="js/d3.geo.projection.v0.min.js"></script>
 <script type="text/javascript" src="js/CustomTooltip.js"></script>
+<script type="text/javascript" src="js/map.js"></script>
 
 
 <div class="header" style="text-align:center;">
@@ -31,7 +32,7 @@
         <div class="swathe">
             <div>Our mission</div>
             <div>Right of asylum</div>
-            <div>Border politics</div>
+            <div>Border policies</div>
             <div>Immigration & integration</div>
             <div>Data</div>
             <div>Features</div>
@@ -56,15 +57,23 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
     .key(function(d) { return d.theme})
     .sortKeys(d3.ascending)
     .entries(sheet.result);
+
+    sheet = sheet.filter(function(d,i){return d.values[0].hidden == "n"});
     
     var divrows = d3.select(".content").selectAll('div.pure-g').data(sheet).enter().append("div").attr({class:'pure-g'});
 
-    var cards = divrows.selectAll('div.pure-u-1.pure-u-sm-1-2.pure-u-md-1-2.pure-u-lg-1-3.pure-u-xl-1-4').data(function(d,i){return d.values});
+    var cards = divrows.selectAll('div.pure-u-1.pure-u-sm-1-2.pure-u-md-1-2.pure-u-lg-1-3.pure-u-xl-1-4').data(function(d,i){return d.values.filter(function(d,i){return d.hidden == "n"})});
     cards.enter().append('div')
     .attr({
         class: function(d,i){
-            console.log(d)
-            return  (d.content).indexOf("map") > -1 ? 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-2-3 pure-u-xl-1-2':'pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4'
+            // console.log(d)
+            if((d.content).indexOf("map") > -1){
+                return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-2-3 pure-u-xl-3-4'
+            }else if(d.theme == "flows" & d.type == "intro"){
+                return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-1-3 pure-u-xl-1-4'
+            }else{
+                return 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4'
+            }
         }
     });
 
@@ -74,7 +83,7 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
 
     var intros = inners.filter(function(d){return d.type == "intro"}).append("p").html(function(d){return d.content});
 
-    console.log(d3.select('.l-box').node().getBoundingClientRect());
+    // console.log(d3.select('.l-box').node().getBoundingClientRect());
 
     var dataset = {};
     var dt = {};
@@ -86,8 +95,8 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
 
     // var clientWidth = document.getElementById('placeholder').clientWidth;
     var margin = {top: 20, right: 25, bottom: 120, left: 42, base:30},
-        width = d3.select('.l-box').node().getBoundingClientRect().width-(margin.left+margin.right+4),
-        height = d3.select('.l-box').node().getBoundingClientRect().height-(margin.bottom+margin.base);
+        width = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().width-(margin.left+margin.right+4),
+        height = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().height-(margin.bottom+margin.base);
     var monthsArr = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     var monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     var si = d3.format("s");
@@ -97,16 +106,14 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
     var xMonth = d3.time.scale()
         .range([0, width]);
 
-    d3.select(window)
-          .on("resize", sizeChange);
-
     function sizeChange(){
       
       //if(vpwidth > 900){
         //d3.select("#svgCont").style("overflow-x", "visible");
         // clientWidth = document.getElementById('placeholder').clientWidth;
-        width = d3.select('.l-box').node().getBoundingClientRect().width-(margin.left+margin.right+4),
-        height = d3.select('.l-box').node().getBoundingClientRect().height-margin.bottom;
+        width = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().width-(margin.left+margin.right+4),
+        height = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().height-margin.bottom;
+        console.log(width+(margin.left+margin.right+4));
         x.range([0, width]);
         xMonth.range([0, width]);
         drawChart(dt.greece, "greece");
@@ -363,10 +370,33 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
     }
 
     //LOAD MAP SCRIPT
-    $.getScript( "js/map.js" )
-      .done(function( script, textStatus ) {
-        console.log( textStatus );
-      });
+    // $.getScript( "js/map.js" )
+    //   .done(function( script, textStatus ) {
+    //     console.log( textStatus );
+    //   });
+
+    function sizeChangeMap() {
+            d3.select("g.world1").attr("transform", "scale(" + $("#map_1").width()/480 + ")");
+            d3.select("g.labels").attr("transform", "scale(" + $("#map_1").width()/480 + ")");
+            //d3.select("g.world2").attr("transform", "scale(" + $("#map_2").width()/480 + ")");
+            $("#mapSvg_1").height($("#map_1").width()*0.55);
+            $("#mapSvg_1").width($("#map_1").width());
+            //$("#mapSvg_2").height($("#map_2").width()*0.35);
+            //$("#mapSvg_2").width($("#map_2").width());
+            d3.select(".flows.intro").style({
+              "min-height": d3.select(".chart.flows.full").node().offsetLeft > 50 ? d3.select(".chart.flows.full").style("height"):"300px"
+            })
+      }
+
+    callMap();
+
+    d3.select(window)
+        .on("resize",function(){
+          console.log("Resized charts")
+          sizeChange();
+          console.log("Resized map")
+          sizeChangeMap();
+        });
 })
 
 String.prototype.ucfirst = function()

@@ -1,3 +1,5 @@
+function callMap(){
+  
   var tooltip= CustomTooltip("bubbles_tooltip");
   var svg,width,height, projection, path, scale, circles, radius1, radius2, countryLabs,
   formatNumber = d3.format(",.0f");
@@ -43,7 +45,7 @@ $(document).ready(function(){
   }
 
 
-  function sizeChange() {
+  function sizeChangeMap() {
         d3.select("g.world1").attr("transform", "scale(" + $("#map_1").width()/480 + ")");
         d3.select("g.labels").attr("transform", "scale(" + $("#map_1").width()/480 + ")");
         //d3.select("g.world2").attr("transform", "scale(" + $("#map_2").width()/480 + ")");
@@ -51,6 +53,9 @@ $(document).ready(function(){
         $("#mapSvg_1").width($("#map_1").width());
         //$("#mapSvg_2").height($("#map_2").width()*0.35);
         //$("#mapSvg_2").width($("#map_2").width());
+        d3.select(".flows.intro").style({
+          "min-height": d3.select(".chart.flows.full").node().offsetLeft > 50 ? d3.select(".chart.flows.full").style("height"):"300px"
+        })
   }
   d3.selection.prototype.moveToFront = function() {
     return this.each(function(){
@@ -61,7 +66,7 @@ $(document).ready(function(){
 //DATA LOADING
 d3.json("http://data.unhcr.org/api/stats/mediterranean/monthly_arrivals_by_location.json", function(data) {
   circlesData1 = data;
-  console.log(data);
+  // console.log(data);
   for (var i = 0; i < data.length; i++){
     if(data[i].location == "Lesvos"){
       var mnth = data[i].month_en;
@@ -91,8 +96,11 @@ function drawMap(mapNum, mapScale, mapTranslate, circlesData) {
       }
       else { height = $("#map_" + mapNum).width()*0.35; }
       
-      d3.select(window)
-        .on("resize", sizeChange);
+      // d3.select(window)
+      //   .on("resize",function(){
+      //     console.log("Resized map")
+      //     sizeChangeMap();
+      //   });
 
       projection = d3.geo.robinson()
       .scale(mapScale)
@@ -123,7 +131,7 @@ function drawMap(mapNum, mapScale, mapTranslate, circlesData) {
         selectedMonth = data[data.length - 1].month;
         var selectedYear = data[data.length - 1].year;
         selMnthSlid = dates.length-2;
-        console.log(dates[selMnthSlid]);
+        // console.log(dates[selMnthSlid]);
         d3.select("#slider-step-value").html(dates[selMnthSlid]);
         //d3.select("#slider-step-value2").html(dates[selectedMonth]);
 
@@ -169,13 +177,17 @@ function drawMap(mapNum, mapScale, mapTranslate, circlesData) {
               else return d.properties.name;
             })
             .call(wrap, 70);
+
+          d3.select(".flows.intro").style({
+            "min-height": d3.select(".chart.flows.full").style("height")
+          })
         
       }
 
       function show_details(data, i, element, indx) {
         var selectorId = data.id;
         d3.select("#circles" + indx).select("circle#" + selectorId).moveToFront().style("fill", "rgba(252, 182, 21, 0.7)");
-        console.log(data.location);
+        // console.log(data.location);
         var tipContent = "<div class=\"tipCountry\"> " + data.location + "</div>";
         tipContent +="<div class=\"tipArriv\"> " + formatNumber(data.value) + "</div>";
         tooltip.showTooltip(tipContent, d3.event);
@@ -287,3 +299,5 @@ function drawMap(mapNum, mapScale, mapTranslate, circlesData) {
   }
 
 });
+  
+}
