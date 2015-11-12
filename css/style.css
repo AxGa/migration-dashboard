@@ -2,6 +2,37 @@ body,.pure-g [class *="pure-u"] {
   font-family: "zona_prothin", Arial, serif;
 }
 
+.header span{
+  display:inline;
+  font-size:2em;
+  font-weight:bold;
+}
+
+.header span:nth-of-type(1){
+  color:#EC1B46;
+}
+
+.header span:nth-of-type(2){
+  color:#2C4043;
+}
+
+.swathe{
+  background-color:#EC1B46;
+  margin-top:1em;
+  /*height:75px;*/
+  width:100%;
+}
+
+.swathe div{
+  box-sizing:border-box;
+  padding:10px 20px;
+  display:inline-block;
+  min-width:calc(10% - 10px);
+  max-width:calc(15% - 10px);
+  font-size:1.5em;
+  color:#fff;
+}
+
 #placeholder{
   width: 100%;
 }
@@ -179,6 +210,19 @@ path.domain{fill:none;stroke:#000;stroke-width:1px;shape-rendering:crispEdges;}
     -webkit-animation-iteration-count: infinite;
 }
 
+
+@media (max-width: 768px){
+  .swathe div{
+    box-sizing:border-box;
+    padding:10px 20px;
+    display:block;
+    min-width:100%;
+    text-align:left;
+    /*max-width:calc(15% - 10px);*/
+    font-size:1.5em;
+    color:#fff;
+  }
+}
 
 @media (max-width: 460px) {
   /*body{
