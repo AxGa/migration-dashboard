@@ -1,0 +1,227 @@
+body{
+  font-family: "zona_probold", Arial;
+}
+
+.cont{
+  position: relative;
+}
+
+.graphTitle1{
+  font-size: 24px;
+  font-weight: bold;
+  color: #005689;
+  margin-bottom: 6px; 
+}
+
+.graphTitle2{
+  font-size: 24px;
+  font-weight: bold;
+  color: #4bc6df;
+}
+
+.titleBox{
+  width: 50px;
+  height: 6px;
+  background-color: #4bc6df;
+  margin-bottom: 5px;
+}
+
+#map_1{
+	width: 100%;
+  position: relative;
+  overflow: hidden;
+  max-width: 900px;
+}
+
+#map_2{
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  max-width: 900px;
+}
+
+.country1{
+  fill: #eaeaea;
+}
+
+.country2{
+  fill: #eaeaea;
+}
+
+.label{
+  font-size: 8px;
+  fill: #d2d2d2;
+  font-family: "zona_probold", Arial;
+}
+
+.mapTitle{
+  font-weight: bold;
+  color: #333;
+}
+
+svg text {
+  pointer-events: none;
+  text-shadow: 0px 0px 4px #f9f9f9;
+}
+
+circle {
+  fill: #fcb615;
+  fill-opacity: .6;
+  stroke: rgba(252, 182, 21, 0.27);
+}
+
+svg stroke{
+  pointer-events: none;
+}
+
+.fg{
+  opacity: 0.5;
+}
+
+.tooltip {
+  font-family: "robotobold", Arial;
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  -moz-border-radius:5px;
+  border-radius: 5px;
+  /* background: #222222; */
+  background: #fff;
+  opacity: .9;
+  /* color: #eeeeee; */
+  color: #005689;
+  padding: 7px 10px 5px 7px;
+  /*width: 300px;*/
+  font-size: 12px;
+  z-index: 1020;
+}
+
+.tooltip .title {
+  font-size: 13px;
+}
+
+.tooltip .name {
+  font-weight:bold;
+}
+
+.tipCountry{
+  font-family: "zona_prothin", Arial;
+  font-size: 14px;
+  color: #333;
+  margin-right: 5px;
+}
+
+.tipArriv{
+  font-size: 18px;
+  color: #2C4143;
+}
+
+.note{
+  font-size: 12px;
+  display: block;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.clear: {
+  clear: both;
+}
+
+/****** SLIDER ******/
+#playBtn{
+  background: url("images/playBtn_03.png");
+  background-size: 40px 80px;
+  width: 40px;
+  height: 40px;
+  float: left;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+#playBtn:hover{
+  opacity: 1;
+}
+
+#slider-step-value{
+  font-size: 22px;
+  margin-left: 5px;
+}
+
+#slider-step-value2{
+  font-size: 19px;
+  margin-left: 5px;
+}
+
+.noUi-target{
+  margin-top: 17px;
+  width: 82%;
+  margin-left: 50px;
+  margin-right: 5%;
+  margin-bottom: 55px;
+  max-width: 800px;
+  box-shadow: inset 0 1px 1px #999, 0 3px 6px -5px #BBB;
+}
+
+.noUi-background {
+    background: #d2d2d2;
+}
+
+.noUi-horizontal {
+  height: 10px;
+}
+
+.noUi-horizontal .noUi-handle {
+  width: 25px;
+  height: 25px;
+  left: -17px;
+  top: -8px;
+  box-shadow: none;
+  background: #CD1F40;
+}
+
+.noUi-handle{
+  background: #00456e;
+  box-shadow: none;
+}
+
+@media (min-width: 950px) {
+
+}
+
+@media (max-width: 401px) {
+  .txt{
+    font-size: 11px;
+  }
+  .button{
+    margin-left: 2%;
+    margin-top: 0px;
+  }
+
+  .flights_key {
+    font-size: 11px;
+  }
+
+  .box {
+    margin: 5px 8% 0 2%;
+  }
+
+  .tooltip{
+    font-size: 10px;
+  }
+  .tipCountry{
+    font-size: 10px;
+  }
+
+  #slider-step-value{
+    font-size: 16px;
+  }
+
+   #slider-step-value2{
+    font-size: 16px;
+  }
+
+  .mapTitle{
+    font-size: 14px;
+  }
+
+}
