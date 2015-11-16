@@ -30,7 +30,6 @@ body{
 	width: 100%;
   position: relative;
   overflow: hidden;
-  max-width: 900px;
 }
 
 #map_2{
@@ -51,7 +50,6 @@ body{
 .label{
   font-size: 8px;
   fill: #d2d2d2;
-  font-family: "zona_probold", Arial;
 }
 
 .mapTitle{
@@ -154,11 +152,9 @@ svg stroke{
 
 .noUi-target{
   margin-top: 17px;
-  width: 82%;
   margin-left: 50px;
   margin-right: 5%;
   margin-bottom: 55px;
-  max-width: 800px;
   box-shadow: inset 0 1px 1px #999, 0 3px 6px -5px #BBB;
 }
 
