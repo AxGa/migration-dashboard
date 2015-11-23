@@ -26,25 +26,27 @@ body{
   margin-bottom: 5px;
 }
 
-#map_1{
+#map{
 	width: 100%;
   position: relative;
   overflow: hidden;
 }
 
-#map_2{
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  max-width: 900px;
+#feature{
+  stroke: #ccc;
+  stroke-width: 1px;
+  fill: none;
 }
 
-.country1{
-  fill: #eaeaea;
+image{
+  opacity: 0.3;
 }
 
-.country2{
-  fill: #eaeaea;
+.mesh {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1px;
+  stroke-linejoin: round;
 }
 
 .label{
@@ -64,7 +66,7 @@ svg text {
 
 circle {
   fill: #fcb615;
-  fill-opacity: .6;
+  fill-opacity: .7;
   stroke: rgba(252, 182, 21, 0.27);
 }
 

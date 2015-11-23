@@ -1,7 +1,7 @@
 function callMap(){
   
   var tooltip= CustomTooltip("bubbles_tooltip");
-  var svg,width,height, projection, path, scale, circles, radius1, radius2, countryLabs,
+  var svg, meshData, scale, circles, radius1, radius2, countryLabs,
   formatNumber = d3.format(",.0f");
   var selectedMonth, selMnthSlid;
   var delay = function(d, i) { return i * 50; };
@@ -9,19 +9,22 @@ function callMap(){
   var dates = [];
   var placeholder = d3.select(".l-box.flows:not(.full)").classed("full",true);//$(".lbox.flows").not(".full").addClass( "full" );
   placeholder.append("span").attr("id", "slider-step-value");
-  placeholder.append("div").attr("id", "map_1");
+  placeholder.append("div").attr("id", "map");
   placeholder.append("div").attr("id", "playBtn");
   placeholder.append("div").attr("id", "slider-step");
 $(document).ready(function(){
+  var width = $("#map").width();
+  var height = $("#map").width()*0.55;
 
-/*  placeholder.append("<span id='slider-step-value'></span>");
-  placeholder.append("<div id='map_1'></div>");
+  var mapScale = width * 2.352433;//2997;
+  var mapTranslate = [(width/-3.55) - 13, height * 3.893249607]; //[-358.00, 2728.00];
 
-  placeholder.append("<div id='playBtn'></div>");
-  placeholder.append("<div id='slider-step'></div>");
-  placeholder.append("<div class='note'>Source: <a href='http://data.unhcr.org/syrianrefugees/regional.php' target='_blank'>UNHCR</a></div>");
-*/
-  //placeholder.append("<div id='map2'></div>");
+  var projection = d3.geo.robinson()
+          .scale(mapScale)
+          .translate(mapTranslate);
+
+  var path = d3.geo.path()
+          .projection(projection);
 
   function sliderInit(curMonth){
     $('#slider-step').noUiSlider({
@@ -46,13 +49,7 @@ $(document).ready(function(){
 
 
   function sizeChangeMap() {
-        d3.select("g.world1").attr("transform", "scale(" + $("#map_1").width()/480 + ")");
-        d3.select("g.labels").attr("transform", "scale(" + $("#map_1").width()/480 + ")");
-        //d3.select("g.world2").attr("transform", "scale(" + $("#map_2").width()/480 + ")");
-        $("#mapSvg_1").height($("#map_1").width()*0.55);
-        $("#mapSvg_1").width($("#map_1").width());
-        //$("#mapSvg_2").height($("#map_2").width()*0.35);
-        //$("#mapSvg_2").width($("#map_2").width());
+
         d3.select(".flows.intro").style({
           "min-height": d3.select(".chart.flows.full").node().offsetLeft > 50 ? d3.select(".chart.flows.full").style("height"):"300px"
         })
@@ -79,56 +76,51 @@ d3.json("http://data.unhcr.org/api/stats/mediterranean/monthly_arrivals_by_locat
   sliderInit(currentMonth);
   d3.json("js/data.json", function(error, world) {
       if (error) return console.error(error);
-      mapData = topojson.feature(world, world.objects.countries).features;
-      var mapTranslate1 = [-120, 990];
-      //var mapTranslate2 = [60, 380];
-      drawMap(1, 1080, mapTranslate1, circlesData1);
+      mapData = topojson.feature(world, world.objects.countries);
+      meshData = topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; });
+      drawMap(circlesData1);
       //drawMap(2, 460, mapTranslate2, circlesData2);
       
   });
 });
 
 
-function drawMap(mapNum, mapScale, mapTranslate, circlesData) {
-      width = $("#map_" + mapNum).width();
-      if(mapNum === 1){
-        height = $("#map_" + mapNum).width()*0.55;
-      }
-      else { height = $("#map_" + mapNum).width()*0.35; }
-      
-      // d3.select(window)
-      //   .on("resize",function(){
-      //     console.log("Resized map")
-      //     sizeChangeMap();
-      //   });
+function drawMap(circlesData) {
+      projection
+        .scale(mapScale)
+        .translate(mapTranslate);
 
-      projection = d3.geo.robinson()
-      .scale(mapScale)
-      .translate(mapTranslate);
+      svg = d3.select("#map").append("svg")
+        .attr("id", "mapSvg")
+        .attr("width", width - 13)
+        .attr("height", height);
 
-      path = d3.geo.path()
-          .projection(projection);
+      svg.append("path")
+        .datum(mapData)
+        .attr("id", "feature")
+        .attr("d", path);
 
-      svg = d3.select("#map_" + mapNum).append("svg")
-        .attr("id", "mapSvg_" + mapNum)
-        .attr("width", width)
-        .attr("height", height)
-        .append("g")
-        .attr("class", "world" + mapNum)
-        .attr("transform", "scale(" + $("#map_" + mapNum).width()/480 + ")");
+      svg.append("clipPath")
+          .attr("id", "clip")
+        .append("use")
+          .attr("xlink:href", "#feature");
 
-      svg.selectAll(".country")
-        .data(mapData)
-      .enter().append("path")
-        .attr("class", "country" + mapNum)
-        .attr("id", function(d) { return d.id; })
-        .attr("d", path)
-        .attr("stroke", "#fff");
-        //.on("click", clicked);
-        drawCircles(circlesData);
+      svg.append("image")
+          .attr("clip-path", "url(#clip)")
+          .attr("xlink:href", "test_rob.png")
+          .attr("width", width + (width * 0.07849))
+          .attr("height", height)
+          .attr("x", -13);
+
+      svg.append("path")
+        .datum(meshData)
+        .attr("class", "mesh")
+        .attr("d", path);
+
+      drawCircles(circlesData);
         
       function drawCircles(data){
-        selectedMonth = data[data.length - 1].month;
+        selectedMonth = getMonthFromString(dates[dates.length -2].split(" ")[0]);//data[data.length - 1].month;
         var selectedYear = data[data.length - 1].year;
         selMnthSlid = dates.length-2;
         // console.log(dates[selMnthSlid]);
@@ -136,7 +128,7 @@ function drawMap(mapNum, mapScale, mapTranslate, circlesData) {
         //d3.select("#slider-step-value2").html(dates[selectedMonth]);
 
         circles = svg.append("g")
-            .attr("id", "circles" + mapNum);
+            .attr("id", "circles");
 
 
         var radius = d3.scale.sqrt();
@@ -154,12 +146,12 @@ function drawMap(mapNum, mapScale, mapTranslate, circlesData) {
           .attr("r",  function(d) { return radius1(d.value); })
           .on("mouseover", function(d, i) {
               d3.select(this).style("fill", "rgba(252, 182, 21, 0.7)");
-              show_details(d, i, this, mapNum);})
+              show_details(d, i, this);})
           .on("mouseout", function(d) {
               d3.select(this).style("fill","#fcb615");
               tooltip.hideTooltip();});
 
-        countryLabs = d3.select("#mapSvg_1").append("g").attr("class", "labels").attr("transform", "scale(" + $("#map_" + mapNum).width()/480 + ")");;
+        countryLabs = d3.select("#mapSvg").append("g").attr("class", "labels");
 
         countryLabs.selectAll("labels")
           .data(mapData)
@@ -184,9 +176,9 @@ function drawMap(mapNum, mapScale, mapTranslate, circlesData) {
         
       }
 
-      function show_details(data, i, element, indx) {
+      function show_details(data, i, element) {
         var selectorId = data.id;
-        d3.select("#circles" + indx).select("circle#" + selectorId).moveToFront().style("fill", "rgba(252, 182, 21, 0.7)");
+        d3.select("#circles").select("circle#" + selectorId).moveToFront().style("fill", "rgba(252, 182, 21, 0.7)");
         // console.log(data.location);
         var tipContent = "<div class=\"tipCountry\"> " + data.location + "</div>";
         tipContent +="<div class=\"tipArriv\"> " + formatNumber(data.value) + "</div>";
@@ -234,7 +226,7 @@ function drawMap(mapNum, mapScale, mapTranslate, circlesData) {
   $('#slider-step').on('slide', onSlide);
 
   function redraw(month, year) {
-      var selection = d3.select("#circles1").selectAll("circle");
+      var selection = d3.select("#circles").selectAll("circle");
       var updatedData = circlesData1.filter(function(d) {
         if(d.month_en == month && d.year == year){
           return d;
@@ -271,6 +263,10 @@ function drawMap(mapNum, mapScale, mapTranslate, circlesData) {
             .duration(500).ease("linear")
             .attr("r",  function(d) { return radius1(d.value); });
  }
+
+function getMonthFromString(mon){
+   return new Date(Date.parse(mon +" 1, 2012")).getMonth()+1
+}
 
  //LINES BREAK FUNCTION
   function wrap(text, width) {
