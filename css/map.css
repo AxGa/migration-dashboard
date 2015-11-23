@@ -50,8 +50,9 @@ image{
 }
 
 .label{
-  font-size: 8px;
-  fill: #d2d2d2;
+  font-size: 14px;
+  fill: #bbbbbb;
+  font-family: "zona_probold";
 }
 
 .mapTitle{

@@ -1,7 +1,7 @@
 function callMap(){
   
   var tooltip= CustomTooltip("bubbles_tooltip");
-  var svg, meshData, scale, circles, radius1, radius2, countryLabs,
+  var svg, meshData, scale, circles, radius1, radius2, countryLabs, labelData,
   formatNumber = d3.format(",.0f");
   var selectedMonth, selMnthSlid;
   var delay = function(d, i) { return i * 50; };
@@ -49,7 +49,7 @@ $(document).ready(function(){
 
 
   function sizeChangeMap() {
-
+        
         d3.select(".flows.intro").style({
           "min-height": d3.select(".chart.flows.full").node().offsetLeft > 50 ? d3.select(".chart.flows.full").style("height"):"300px"
         })
@@ -78,6 +78,7 @@ d3.json("http://data.unhcr.org/api/stats/mediterranean/monthly_arrivals_by_locat
       if (error) return console.error(error);
       mapData = topojson.feature(world, world.objects.countries);
       meshData = topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; });
+      labelData = topojson.feature(world, world.objects.countries).features;
       drawMap(circlesData1);
       //drawMap(2, 460, mapTranslate2, circlesData2);
       
@@ -154,21 +155,21 @@ function drawMap(circlesData) {
         countryLabs = d3.select("#mapSvg").append("g").attr("class", "labels");
 
         countryLabs.selectAll("labels")
-          .data(mapData)
+          .data(labelData)
         .enter()
         .append("text")
             .attr("x", function(d){return path.centroid(d)[0];})
-            .attr("y", function(d){ return d.properties.name == "Croatia" ? path.centroid(d)[1] - 5 : path.centroid(d)[1] ;})
+            .attr("y", function(d){ return d.properties.name == "Croatia" ? path.centroid(d)[1] - 15 : path.centroid(d)[1] ;})
             .attr("dy", "0.3em")
             .attr("text-anchor", "middle")
             .attr("class", "label")
             .text(function(d) { 
-              if(d.properties.name == "Malta" || d.properties.name == "Tunisia" || d.properties.name == "Kosovo"){
+              if(d.properties.name == "Malta" || d.properties.name == "Tunisia" || d.properties.name == "Kosovo" || d.properties.name == "Cyprus" || d.properties.name == "Slovenia"){
                 return;
               }
               else return d.properties.name;
             })
-            .call(wrap, 70);
+            .call(wrap, 90);
 
           d3.select(".flows.intro").style({
             "min-height": d3.select(".chart.flows.full").style("height")
