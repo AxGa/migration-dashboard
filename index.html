@@ -378,18 +378,6 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
     callMap();
 
     function sizeChangeMap() {
-            width = $("#map").width();
-            height = $("#map").width()*0.55;
-            mapScale = width * 2.352433;
-            mapTranslate = [(width/-3.55) - 13, height * 3.893249607];
-
-            projection
-              .scale(mapScale)
-              .translate(mapTranslate);
-            d3.select("svg").attr("width",width - 13).attr("height",height);
-            d3.select("image").attr("width",width + (width * 0.07849)).attr("height",height);
-            d3.selectAll("path").attr('d', path);
-            //$("#mapSvg_2").width($("#map_2").width());
             d3.select(".flows.intro").style({
               "min-height": d3.select(".chart.flows.full").node().offsetLeft > 50 ? d3.select(".chart.flows.full").style("height"):"300px"
             })

@@ -1,7 +1,7 @@
 function callMap(){
   
   var tooltip= CustomTooltip("bubbles_tooltip");
-  var svg, meshData, scale, circles, radius1, radius2, countryLabs, labelData,
+  var svg, meshData, scale, circles, radius1, radius2, countryLabs, labelData, nest,
   formatNumber = d3.format(",.0f");
   var selectedMonth, selMnthSlid;
   var delay = function(d, i) { return i * 50; };
@@ -15,9 +15,9 @@ function callMap(){
 $(document).ready(function(){
   var width = $("#map").width();
   var height = $("#map").width()*0.55;
-
+  var mapMarginLeft = 30;
   var mapScale = width * 2.352433;//2997;
-  var mapTranslate = [(width/-3.55) - 13, height * 3.893249607]; //[-358.00, 2728.00];
+  var mapTranslate = [(width/-3.55) - mapMarginLeft, height * 3.893249607]; //[-358.00, 2728.00];
 
   var projection = d3.geo.robinson()
           .scale(mapScale)
@@ -28,7 +28,7 @@ $(document).ready(function(){
 
   function sliderInit(curMonth){
     $('#slider-step').noUiSlider({
-      start: dates.length - 2,
+      start: dates.length - 1,
       step: 1,
       range: {
         'min': [  0 ],
@@ -63,7 +63,10 @@ $(document).ready(function(){
 //DATA LOADING
 d3.json("http://data.unhcr.org/api/stats/mediterranean/monthly_arrivals_by_location.json", function(data) {
   circlesData1 = data;
-  // console.log(data);
+  nest = d3.nest()
+    .key(function(d) { return d.location; })
+    .entries(data);
+
   for (var i = 0; i < data.length; i++){
     if(data[i].location == "Lesvos"){
       var mnth = data[i].month_en;
@@ -72,7 +75,7 @@ d3.json("http://data.unhcr.org/api/stats/mediterranean/monthly_arrivals_by_locat
       dates.push(date);
     }
   }
-  var currentMonth = data[data.length - 1].month;
+  var currentMonth = getMonthFromString(dates[dates.length - 1].split(" ")[0]);
   sliderInit(currentMonth);
   d3.json("js/data.json", function(error, world) {
       if (error) return console.error(error);
@@ -93,7 +96,7 @@ function drawMap(circlesData) {
 
       svg = d3.select("#map").append("svg")
         .attr("id", "mapSvg")
-        .attr("width", width - 13)
+        .attr("width", width - mapMarginLeft)
         .attr("height", height);
 
       svg.append("path")
@@ -111,7 +114,7 @@ function drawMap(circlesData) {
           .attr("xlink:href", "test_rob.png")
           .attr("width", width + (width * 0.07849))
           .attr("height", height)
-          .attr("x", -13);
+          .attr("x", -mapMarginLeft);
 
       svg.append("path")
         .datum(meshData)
@@ -121,9 +124,7 @@ function drawMap(circlesData) {
       drawCircles(circlesData);
         
       function drawCircles(data){
-        selectedMonth = getMonthFromString(dates[dates.length -2].split(" ")[0]);//data[data.length - 1].month;
-        var selectedYear = data[data.length - 1].year;
-        selMnthSlid = dates.length-2;
+        selMnthSlid = dates.length-1;
         // console.log(dates[selMnthSlid]);
         d3.select("#slider-step-value").html(dates[selMnthSlid]);
         //d3.select("#slider-step-value2").html(dates[selectedMonth]);
@@ -135,16 +136,16 @@ function drawMap(circlesData) {
         var radius = d3.scale.sqrt();
         radius1 = radius
           .domain([0, d3.max(data, function(d){return d.value})])
-          .range([0, 30]);
+          .range([0, (width * 4.5)/100]);
 
         circles.selectAll("circle")
-          .data(data.filter(function(d) { return d.month == selectedMonth && d.year == selectedYear ? d : ""; }))
+          .data(nest, function(d){return d.key;})//(data.filter(function(d) { return d.month == selectedMonth && d.year == selectedYear ? d : ""; }))
         .enter()
         .append("circle")
-          .attr("id", function(d){ return d.location; })
-          .attr("cx", function(d, i) { return projection([+d.location_longitude,+d.location_latitude])[0]; })
-          .attr("cy", function(d, i) { return projection([+d.location_longitude,+d.location_latitude])[1]; })
-          .attr("r",  function(d) { return radius1(d.value); })
+          .attr("id", function(d){ return d.values[0].country; })
+          .attr("cx", function(d, i) { return projection([+d.values[0].location_longitude,+d.values[0].location_latitude])[0]; })
+          .attr("cy", function(d, i) { return projection([+d.values[0].location_longitude,+d.values[0].location_latitude])[1]; })
+          .attr("r",  function(d) { return typeof d.values[selMnthSlid] != "undefined" ? radius1(d.values[selMnthSlid].value) : radius1(0); })
           .on("mouseover", function(d, i) {
               d3.select(this).style("fill", "rgba(252, 182, 21, 0.7)");
               show_details(d, i, this);})
@@ -181,8 +182,8 @@ function drawMap(circlesData) {
         var selectorId = data.id;
         d3.select("#circles").select("circle#" + selectorId).moveToFront().style("fill", "rgba(252, 182, 21, 0.7)");
         // console.log(data.location);
-        var tipContent = "<div class=\"tipCountry\"> " + data.location + "</div>";
-        tipContent +="<div class=\"tipArriv\"> " + formatNumber(data.value) + "</div>";
+        var tipContent = "<div class=\"tipCountry\"> " + data.key + "</div>";
+        tipContent +="<div class=\"tipArriv\"> " + formatNumber(data.values[selMnthSlid].value) + "</div>";
         tooltip.showTooltip(tipContent, d3.event);
       }
        
@@ -208,8 +209,7 @@ function drawMap(circlesData) {
           selMnthSlid = selMnthSlid + 1;
           d3.select("#slider-step-value").html(dates[selMnthSlid]);
           d3.select("#slider-step-value2").html(dates[selMnthSlid]);
-          var dat = dates[selMnthSlid].split(" ");
-          redraw(dat[0], dat[1]);
+          redraw();
       }
       else if(selMnthSlid >= dates.length - 1) {clearInterval(intrvl);}
       }, 500);
@@ -220,50 +220,19 @@ function drawMap(circlesData) {
     selMnthSlid = parseInt($(this).val());
     d3.select("#slider-step-value").html(dates[selMnthSlid]);
     //d3.select("#slider-step-value2").html(dates[selectedMonth]);
-    var dat = dates[selMnthSlid].split(" ");
-    redraw(dat[0], dat[1]);
+    redraw();
   }
 
   $('#slider-step').on('slide', onSlide);
 
-  function redraw(month, year) {
-      var selection = d3.select("#circles").selectAll("circle");
-      var updatedData = circlesData1.filter(function(d) {
-        if(d.month_en == month && d.year == year){
-          return d;
-        }
-      });
+  function redraw(){
+    var selection = d3.select("#circles").selectAll("circle");
+    selection
+    .transition()
+          .duration(500).ease("linear")
+          .attr("r",  function(d) { return typeof d.values[selMnthSlid] != "undefined" ? radius1(d.values[selMnthSlid].value) : radius1(0); });
+  }
 
-      //QUICK FIX FOR UNCHR API BUG SHOULD BE CHANGED
-      var injection = {
-        country: "SPA",
-        country_en: "Spain",
-        last_updated: 1443564000,
-        location: "Mainland Andalucia",
-        location_latitude: 40.4169,
-        location_longitude: -3.7036,
-        location_total: 2339,
-        month: 9,
-        month_en: "September",
-        value: 0,
-        year: 2015
-      };
-      if(updatedData.length < 22){
-        for(var i = 5; i < 9; i++){
-          updatedData.splice(i+1, 0, injection);
-        }
-        updatedData.splice(16, 0, injection);
-        updatedData.splice(18, 0, injection);
-        updatedData.splice(19, 0, injection);
-        updatedData.splice(21, 0, injection);
-      }
-
-      selection
-      .data(updatedData)
-      .transition()
-            .duration(500).ease("linear")
-            .attr("r",  function(d) { return radius1(d.value); });
- }
 
 function getMonthFromString(mon){
    return new Date(Date.parse(mon +" 1, 2012")).getMonth()+1
