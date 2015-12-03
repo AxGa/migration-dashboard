@@ -45,7 +45,7 @@
 </div>
 
 <script>
-
+$( document ).ready(function() {
 function toTitleCase(str){
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 };
@@ -396,7 +396,7 @@ String.prototype.ucfirst = function()
 {
     return this.charAt(0).toUpperCase() + this.substr(1);
 }
-
+})
 </script>
 </body>
 </html>
