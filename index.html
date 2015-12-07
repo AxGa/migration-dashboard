@@ -373,7 +373,8 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
     
     
     //CHECK URL TO HIDE AND SHOW RELEVANT PARTS OF DASHBOARD
-    var url = parent.location.href;
+    var url = document.referrer;
+    console.log(url);
     if(url == "http://openmigration.org/"){
       $( ".pure-g:nth-child(2)" ).css('display', 'none');
     }
