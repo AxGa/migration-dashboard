@@ -83,7 +83,7 @@ d3.json("http://data.unhcr.org/api/stats/mediterranean/monthly_arrivals_by_locat
       meshData = topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; });
       labelData = topojson.feature(world, world.objects.countries).features;
       drawMap(circlesData1);
-      iframeMessenger.enableAutoResize();
+      
       //drawMap(2, 460, mapTranslate2, circlesData2);
       
   });

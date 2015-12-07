@@ -26,7 +26,7 @@
 <script type="text/javascript" src="js/map.js"></script>
 
 
-<div class="header" style="text-align:center;">
+<!-- <div class="header" style="text-align:center;">
     <div class="logo">
         <img src="logo.svg"/>
         <span>Open </span><span> Migration</span>
@@ -40,7 +40,7 @@
         </div>
     </div>
     <h1>Live data</h1>
-</div>
+</div> -->
 
 <div class="content">
 </div>
@@ -197,6 +197,7 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
       }
       max = d3.max(d3.entries(dataset), function(d){return d3.max(d3.entries(d.value), function(e){return typeof(e.value) == "number" ? e.value : 0;})});
       sizeChange();
+      iframeMessenger.enableAutoResize();
     }
 
 
@@ -369,15 +370,15 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
         }
       }
     }
-
-    //LOAD MAP SCRIPT
-    // $.getScript( "js/map.js" )
-    //   .done(function( script, textStatus ) {
-    //     console.log( textStatus );
-    //   });
-
-    callMap();
-
+    
+    
+    //CHECK URL TO HIDE AND SHOW RELEVANT PARTS OF DASHBOARD
+    var url = parent.location.href;
+    if(url == "http://openmigration.org/"){
+      $( ".pure-g:nth-child(2)" ).css('display', 'none');
+    }
+    else { callMap(); }
+    
     function sizeChangeMap() {
             d3.select(".flows.intro").style({
               "min-height": d3.select(".chart.flows.full").node().offsetLeft > 50 ? d3.select(".chart.flows.full").style("height"):"300px"
