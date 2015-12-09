@@ -1,4 +1,4 @@
-function callMap(pUrl, fUrl){
+function callMap(pUrl, fUrl, furlIt){
 
   var tooltip= CustomTooltip("bubbles_tooltip");
   var svg, meshData, scale, circles, radius1, radius2, countryLabs, labelData, nest,
@@ -15,19 +15,19 @@ function callMap(pUrl, fUrl){
 $(document).ready(function(){
   var width = $("#map").width();
   var height;
-  pUrl == fUrl ? height = $("#map").width()*0.70 : height = $("#map").width()*0.55;
+  pUrl == fUrl || furlIt ? height = $("#map").width()*0.70 : height = $("#map").width()*0.55;
   
   var mapMarginLeft;
-  pUrl == fUrl ? mapMarginLeft = 15 : mapMarginLeft = 30;
+  pUrl == fUrl || furlIt ? mapMarginLeft = 15 : mapMarginLeft = 30;
   
   var mapScale;
-  pUrl == fUrl ? mapScale = width * 2.76872536 : mapScale = width * 2.352433;//2997;
+  pUrl == fUrl || furlIt ? mapScale = width * 2.76872536 : mapScale = width * 2.352433;//2997;
   
   var mapTranslate;
-  pUrl == fUrl ? mapTranslate = [(width/-3.16555) - mapMarginLeft, height * 3.60020] :  mapTranslate = [(width/-3.55) - mapMarginLeft, height * 3.893249607];//; //[-358.00, 2728.00];
+  pUrl == fUrl || furlIt ? mapTranslate = [(width/-3.16555) - mapMarginLeft, height * 3.60020] :  mapTranslate = [(width/-3.55) - mapMarginLeft, height * 3.893249607];//; //[-358.00, 2728.00];
   
   var mapBackgr;
-  pUrl == fUrl ? mapBackgr = "map_backgr.png" : mapBackgr = "test_rob.png";
+  pUrl == fUrl || furlIt ? mapBackgr = "map_backgr.png" : mapBackgr = "test_rob.png";
 
   var projection = d3.geo.robinson()
           .scale(mapScale)
@@ -125,7 +125,7 @@ function drawMap(circlesData) {
           .attr("xlink:href", mapBackgr)
           .attr("width", width + (width * 0.07849))
           .attr("height", height)
-          .attr("x", function() { return pUrl == fUrl ? -mapMarginLeft -5 : -mapMarginLeft;} );
+          .attr("x", function() { return pUrl == fUrl || furlIt ? -mapMarginLeft -5 : -mapMarginLeft;} );
 
       svg.append("path")
         .datum(meshData)

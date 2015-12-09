@@ -78,14 +78,15 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
     });
     var parentUrl = document.referrer;
     var frontUrl = "http://openmigration.org/";
+    var frontUrlIt = "http://openmigration.org/it/";
 
     var inners = cards.append('div').attr({class:function(d,i){return i == 0 ? ('l-box full ' + d.type + ' ' + d.theme.replace(/ /g,"")):('l-box ' + d.type + ' ' + d.theme.replace(/ /g,""))}});
 
     var headers = inners.filter(function(d){return d.type == "intro"}).append("h3").html(function(d){return toTitleCase(d.theme)});
 
     var intros = inners.filter(function(d){return d.type == "intro"}).append("p").html(function(d){return d.content});
-    
-    parentUrl == frontUrl ? $( ".dailyarrivals.intro" ).parent().css("opacity", 0) : $( ".dailyarrivals.intro" ).parent().css("opacity", 1);
+
+    parentUrl == frontUrl || frontUrlIt ? $( ".dailyarrivals.intro" ).parent().css("opacity", 0) : $( ".dailyarrivals.intro" ).parent().css("opacity", 1);
     // console.log(d3.select('.l-box').node().getBoundingClientRect());
 
     var dataset = {};
@@ -115,7 +116,7 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
         //d3.select("#svgCont").style("overflow-x", "visible");
         // clientWidth = document.getElementById('placeholder').clientWidth;
         width = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().width-(margin.left+margin.right+4);
-        parentUrl == frontUrl ? height = 97 : height = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().height-margin.bottom;
+        parentUrl == frontUrl || frontUrlIt ? height = 97 : height = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().height-margin.bottom;
         x.range([0, width]);
         xMonth.range([0, width]);
         drawChart(dt.greece, "greece");
@@ -199,7 +200,7 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
       max = d3.max(d3.entries(dataset), function(d){return d3.max(d3.entries(d.value), function(e){return typeof(e.value) == "number" ? e.value : 0;})});
       sizeChange();
       checkUrl();
-      callMap(parentUrl, frontUrl);
+      callMap(parentUrl, frontUrl, frontUrlIt);
       iframeMessenger.enableAutoResize();
     }
 
@@ -227,7 +228,7 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
           .scale(y)
           .orient("left")
           .tickFormat(function(d) { return si(d).replace(/G/, 'bn'); });
-      parentUrl == frontUrl ? yAxis.ticks(5) : yAxis.ticks(10);
+      parentUrl == frontUrl || frontUrlIt? yAxis.ticks(5) : yAxis.ticks(10);
       var todayMonth = today.getMonth();
       var todayDay = today.getDate();
       var todayIndx;
@@ -368,7 +369,7 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
 
     //CHECK URL TO HIDE AND SHOW RELEVANT PARTS OF DASHBOARD
     function checkUrl(){
-      if(parentUrl == frontUrl){
+      if(parentUrl == frontUrl || parentUrl == frontUrlIt){
 
         $( ".pure-g:nth-child(2)" ).insertBefore(".pure-g:nth-child(1)");
         $( ".pure-u-xl-3-4" ).css('width', '100%');
