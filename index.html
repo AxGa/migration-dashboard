@@ -86,7 +86,12 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
 
     var intros = inners.filter(function(d){return d.type == "intro"}).append("p").html(function(d){return d.content});
 
-    parentUrl == frontUrl || frontUrlIt ? $( ".dailyarrivals.intro" ).parent().css("opacity", 0) : $( ".dailyarrivals.intro" ).parent().css("opacity", 1);
+    if(parentUrl == frontUrl || parentUrl == frontUrlIt){
+      $( ".dailyarrivals.intro" ).parent().css("opacity", 0);
+    }
+    else { $( ".dailyarrivals.intro" ).parent().css("opacity", 1); }
+    
+    
     // console.log(d3.select('.l-box').node().getBoundingClientRect());
 
     var dataset = {};
@@ -228,7 +233,7 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
           .scale(y)
           .orient("left")
           .tickFormat(function(d) { return si(d).replace(/G/, 'bn'); });
-      parentUrl == frontUrl || frontUrlIt? yAxis.ticks(5) : yAxis.ticks(10);
+      parentUrl == frontUrl || frontUrlIt ? yAxis.ticks(5) : yAxis.ticks(10);
       var todayMonth = today.getMonth();
       var todayDay = today.getDate();
       var todayIndx;
