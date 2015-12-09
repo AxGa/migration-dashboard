@@ -14,20 +14,22 @@ function callMap(pUrl, fUrl, furlIt){
   placeholder.append("div").attr("id", "slider-step");
 $(document).ready(function(){
   var width = $("#map").width();
-  var height;
-  pUrl == fUrl || furlIt ? height = $("#map").width()*0.70 : height = $("#map").width()*0.55;
+  var height, mapMarginLeft, mapScale, mapTranslate, mapBackgr;
+  if(pUrl == fUrl || pUrl == furlIt){
+    height = $("#map").width()*0.70;
+    mapMarginLeft = 15;
+    mapScale = width * 2.76872536;
+    mapTranslate = [(width/-3.16555) - mapMarginLeft, height * 3.60020];
+    mapBackgr = "map_backgr.png";
+  }
+  else {
+    height = $("#map").width()*0.55;
+    mapMarginLeft = 30;
+     mapScale = width * 2.352433;//2997;
+     mapTranslate = [(width/-3.55) - mapMarginLeft, height * 3.893249607];//; //[-358.00, 2728.00];
+     mapBackgr = "test_rob.png";
+  }
   
-  var mapMarginLeft;
-  pUrl == fUrl || furlIt ? mapMarginLeft = 15 : mapMarginLeft = 30;
-  
-  var mapScale;
-  pUrl == fUrl || furlIt ? mapScale = width * 2.76872536 : mapScale = width * 2.352433;//2997;
-  
-  var mapTranslate;
-  pUrl == fUrl || furlIt ? mapTranslate = [(width/-3.16555) - mapMarginLeft, height * 3.60020] :  mapTranslate = [(width/-3.55) - mapMarginLeft, height * 3.893249607];//; //[-358.00, 2728.00];
-  
-  var mapBackgr;
-  pUrl == fUrl || furlIt ? mapBackgr = "map_backgr.png" : mapBackgr = "test_rob.png";
 
   var projection = d3.geo.robinson()
           .scale(mapScale)
@@ -42,19 +44,19 @@ $(document).ready(function(){
       step: 1,
       range: {
         'min': [  0 ],
-        'max': dates.length - 1
+        'max': dates.length -1 
       }
     });
 
 
     $("#slider-step").noUiSlider_pips({
       mode: 'values',
-      values: [dates.length - curMonth - 2, dates.length - 1],
-      density: 5
+      values: [0, dates.length - curMonth],
+      density: 4.5
     });
     //$( "div.noUi-value-large:contains('"+ dates.length - 25 +"')" ).html('2013');
-    $( "div.noUi-value-large:contains("+ (dates.length - curMonth - 2) +")" ).html('2014');
-    $( "div.noUi-value-large:contains("+ (dates.length - 1) +")" ).html('2015');
+    $( "div.noUi-value-large:contains("+ (0) +")" ).html('2014');
+    $( "div.noUi-value-large:contains("+ (dates.length - curMonth) +")" ).html('2015');
   }
 
 
@@ -125,7 +127,7 @@ function drawMap(circlesData) {
           .attr("xlink:href", mapBackgr)
           .attr("width", width + (width * 0.07849))
           .attr("height", height)
-          .attr("x", function() { return pUrl == fUrl || furlIt ? -mapMarginLeft -5 : -mapMarginLeft;} );
+          .attr("x", function() { return pUrl == fUrl || pUrl == furlIt ? -mapMarginLeft -5 : -mapMarginLeft;} );
 
       svg.append("path")
         .datum(meshData)
