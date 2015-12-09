@@ -1,5 +1,5 @@
-function callMap(){
-  
+function callMap(pUrl, fUrl){
+
   var tooltip= CustomTooltip("bubbles_tooltip");
   var svg, meshData, scale, circles, radius1, radius2, countryLabs, labelData, nest,
   formatNumber = d3.format(",.0f");
@@ -14,10 +14,20 @@ function callMap(){
   placeholder.append("div").attr("id", "slider-step");
 $(document).ready(function(){
   var width = $("#map").width();
-  var height = $("#map").width()*0.55;
-  var mapMarginLeft = 30;
-  var mapScale = width * 2.352433;//2997;
-  var mapTranslate = [(width/-3.55) - mapMarginLeft, height * 3.893249607]; //[-358.00, 2728.00];
+  var height;
+  pUrl == fUrl ? height = $("#map").width()*0.70 : height = $("#map").width()*0.55;
+  
+  var mapMarginLeft;
+  pUrl == fUrl ? mapMarginLeft = 15 : mapMarginLeft = 30;
+  
+  var mapScale;
+  pUrl == fUrl ? mapScale = width * 2.76872536 : mapScale = width * 2.352433;//2997;
+  
+  var mapTranslate;
+  pUrl == fUrl ? mapTranslate = [(width/-3.16555) - mapMarginLeft, height * 3.60020] :  mapTranslate = [(width/-3.55) - mapMarginLeft, height * 3.893249607];//; //[-358.00, 2728.00];
+  
+  var mapBackgr;
+  pUrl == fUrl ? mapBackgr = "map_backgr.png" : mapBackgr = "test_rob.png";
 
   var projection = d3.geo.robinson()
           .scale(mapScale)
@@ -112,10 +122,10 @@ function drawMap(circlesData) {
 
       svg.append("image")
           .attr("clip-path", "url(#clip)")
-          .attr("xlink:href", "test_rob.png")
+          .attr("xlink:href", mapBackgr)
           .attr("width", width + (width * 0.07849))
           .attr("height", height)
-          .attr("x", -mapMarginLeft);
+          .attr("x", function() { return pUrl == fUrl ? -mapMarginLeft -5 : -mapMarginLeft;} );
 
       svg.append("path")
         .datum(meshData)
