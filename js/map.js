@@ -1,4 +1,4 @@
-function callMap(pUrl, fUrl, furlIt, fUrlEn){
+function callMap(pUrl, fUrl, furlIt, furlEn){
 
   var tooltip= CustomTooltip("bubbles_tooltip");
   var svg, meshData, scale, circles, radius1, radius2, countryLabs, labelData, nest,
