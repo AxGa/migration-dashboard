@@ -1,4 +1,4 @@
-function callMap(pUrl, fUrl, furlIt){
+function callMap(pUrl, fUrl, furlIt, fUrlEn){
 
   var tooltip= CustomTooltip("bubbles_tooltip");
   var svg, meshData, scale, circles, radius1, radius2, countryLabs, labelData, nest,
@@ -15,7 +15,7 @@ function callMap(pUrl, fUrl, furlIt){
 $(document).ready(function(){
   var width = $("#map").width();
   var height, mapMarginLeft, mapScale, mapTranslate, mapBackgr;
-  if(pUrl == fUrl || pUrl == furlIt){
+  if(pUrl == fUrl || pUrl == furlIt || pUrl == furlEn){
     height = $("#map").width()*0.70;
     mapMarginLeft = 15;
     mapScale = width * 2.76872536;
@@ -127,7 +127,7 @@ function drawMap(circlesData) {
           .attr("xlink:href", mapBackgr)
           .attr("width", width + (width * 0.07849))
           .attr("height", height)
-          .attr("x", function() { return pUrl == fUrl || pUrl == furlIt ? -mapMarginLeft -5 : -mapMarginLeft;} );
+          .attr("x", function() { return pUrl == fUrl || pUrl == furlIt || pUrl == furlEn ? -mapMarginLeft -5 : -mapMarginLeft;} );
 
       svg.append("path")
         .datum(meshData)
