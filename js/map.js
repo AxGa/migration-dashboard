@@ -24,10 +24,10 @@ $(document).ready(function(){
   }
   else {
     height = $("#map").width()*0.55;
-    mapMarginLeft = 30;
-     mapScale = width * 2.352433;//2997;
-     mapTranslate = [(width/-3.55) - mapMarginLeft, height * 3.893249607];//; //[-358.00, 2728.00];
-     mapBackgr = "test_rob.png";
+    width > 460 ? mapMarginLeft = 30 : mapMarginLeft = 10;
+    mapScale = width * 2.352433;//2997;
+    mapTranslate = [(width/-3.55) - mapMarginLeft, height * 3.893249607];//; //[-358.00, 2728.00];
+    mapBackgr = "test_rob.png";
   }
   
 
