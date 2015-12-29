@@ -228,6 +228,11 @@ path.domain{fill:none;stroke:#000;stroke-width:1px;shape-rendering:crispEdges;}
   /*body{
     width: 300px;
   }*/
+
+  .pure-g{
+    width: 100%;
+    float: left;
+  }
   
   .date{
     width: 35%;
