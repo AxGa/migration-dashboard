@@ -230,14 +230,15 @@ path.domain{fill:none;stroke:#000;stroke-width:1px;shape-rendering:crispEdges;}
   }*/
   
   .date{
-    width: 75%;
-    float: none;
+    width: 40%;
+    float: left;
     margin-bottom: 8px;
-    font-size: 16px;
+    font-size: 14px;
+    margin-right: 5px;
   }
 
    .amountDiv{
-    font-size: 26px;
+    font-size: 18px;
     float: left;
     width: 40%;
     border-left: 0px;
