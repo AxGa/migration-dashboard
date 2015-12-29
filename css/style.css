@@ -230,7 +230,7 @@ path.domain{fill:none;stroke:#000;stroke-width:1px;shape-rendering:crispEdges;}
   }*/
   
   .date{
-    width: 40%;
+    width: 38%;
     float: left;
     margin-bottom: 8px;
     font-size: 14px;
@@ -243,6 +243,10 @@ path.domain{fill:none;stroke:#000;stroke-width:1px;shape-rendering:crispEdges;}
     width: 23%;
     border-left: 0px;
     padding-left: 2%;
+  }
+
+  .countryLab{
+    font-size: 16px;
   }
 
   .amLab{
