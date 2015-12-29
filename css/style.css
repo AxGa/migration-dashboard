@@ -230,7 +230,7 @@ path.domain{fill:none;stroke:#000;stroke-width:1px;shape-rendering:crispEdges;}
   }*/
 
   .pure-g{
-    width: 100%;
+    width: 100% !important;
     float: left;
   }
   
