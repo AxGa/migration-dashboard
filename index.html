@@ -228,7 +228,7 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
           .orient("bottom")
           .ticks(d3.time.months)
           .tickSize(30, 0)
-          .tickFormat(d3.time.format("%b" + " '15"));
+          .tickFormat(d3.time.format("%b" + " '" + "%y"));
 
       var yAxis = d3.svg.axis()
           .scale(y)
