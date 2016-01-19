@@ -1,0 +1,24 @@
+<table id="ap_tbl" class='tablesorter'>
+  <thead>
+    <tr>
+      <th class="tab_header first">Country</th>
+      <th class="tab_header">Applicants</th>
+      <th class="tab_header">Applicants per million</th>
+      <th class="tab_header">Decisions</th>
+      <th class="tab_header">Positive (%)</th>
+    </tr>
+
+  </thead>
+  
+  <tbody>
+  {{#as_applicants}}
+    <tr>
+      <td class="column">{{name}}</td>
+      <td class="column">{{applicants}}</td>
+      <td class="column">{{appls_per_milllion}}</td>
+      <td class="column">{{decisions_total}}</td>
+      <td class="column">{{positive_rate}}</td>
+    </tr>
+  {{/as_applicants}}
+  </tbody>
+</table>

@@ -1,0 +1,242 @@
+body {
+  font-family: "zona_prothin", Arial, serif;
+  height: 1224;
+}
+
+.placeholder{
+  
+}
+
+.title_box{
+  background-color: #ededed;
+  padding: 10px;
+  font-size: 14px;
+}
+
+#chart{
+  width: 60%;
+  margin: auto;
+  position: relative;
+}
+
+.descr{
+  margin: 2px 0 5px;
+  font-size: 14px;
+}
+
+.totalNumber{
+  font-size: 42px;
+  width: 60%;
+  margin: auto;
+  text-align: center;
+}
+
+.labels{
+  position: relative;
+  height: 25px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #bdbdbd;
+  width: 60%;
+  margin: auto;
+}
+
+.labLeft{
+  position: absolute;
+  left: 0;
+}
+
+.labRight{
+  position: absolute;
+  right: 0;
+}
+
+.node rect {
+  fill-opacity: .9;
+  shape-rendering: crispEdges;
+}
+
+.node text {
+  pointer-events: none;
+}
+
+.link {
+  fill: none;
+  stroke: #000;
+  stroke-opacity: .05;
+}
+
+.sank_tooltip{
+  background-color: rgba(255, 255, 255, 0);
+  border: 1px solid;
+  border-color: rgba(255, 255, 255, 0);
+  width: 20%;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  position: absolute;
+  left: 150px;
+  top: 0px;
+  padding: 10px;
+}
+
+.tooltip-country{
+  text-align: left;
+  font-size: 20px;
+}
+
+.tooltip-value{
+  text-align: left;
+  font-size: 14px;
+}
+
+table.data-table {
+  font-size: 110%;
+  font-weight: 500;
+  margin: 5px 0 0 0;
+  background-color: transparent;
+}
+
+.cou-name{
+  font-size: 14px;
+  text-align: left;
+}
+
+.cou-val{
+  font-size: 14px;
+  text-align: right;
+}
+
+.linkTip{
+  background-color: rgba(255, 255, 255, 0);
+  border: 1px solid;
+  border-color: rgba(255, 255, 255, 0);
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  position: absolute;
+  left: 150px;
+  top: 0px;
+  padding: 10px;
+  max-width: 230px;
+}
+
+.notes{
+  font-size: 13px;
+}
+
+.note{
+  margin-top: 5px;
+  font-weight: 300;
+}
+
+.note ul{
+  margin-top: 3px !important;
+}
+
+.clear{
+  clear: both;
+}
+
+.applicants_table{
+  font-size: 12px;
+}
+
+#ap_tbl{
+  border-spacing: 0px !important;
+  width: 100%;
+}
+
+.tab_header{
+    text-align: left;
+    color: #767676 !important;
+    font-size: 12px !important;
+    font-weight: 300 !important;
+    vertical-align: top;
+    line-height: 12px;
+    border-bottom: 2px solid #bdbdbd;
+    position: relative;
+    padding: 6px 20px 6px 0;
+}
+
+.tab_header:hover{
+  background-color: #eaeaea;
+  cursor: pointer;
+}
+
+.tab_header.first{
+}
+
+.headerSortDown{
+    border-bottom: 2px solid #333;
+    font-weight: 600 !important;
+}
+
+.headerSortUp{
+  border-bottom: 2px solid #333;
+  font-weight: 600 !important;
+}
+
+.column{
+    vertical-align: top;
+    padding: 6px 20px 6px 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: #676767;
+    border-bottom: 1px dotted #f1f1f1;
+}
+
+@media (max-width: 780px) {
+  .tooltip-value{
+    font-size: 12px;
+  }
+
+  .cou-name{
+    font-size: 12px;
+  }
+
+  .cou-val{
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 460px) {
+  .labels{
+    font-size: 12px;
+  }
+
+  .labRight{
+    width: 86px;
+    text-align: right;
+  }
+
+  .tooltip{
+    width: 155px;
+  }
+
+  .tooltip-country{
+    font-size: 18px;
+  }
+
+  .tooltip-value{
+    font-size: 13px;
+  }
+
+  .cou-name{
+    font-size: 13px;
+  }
+
+  .cou-val{
+    font-size: 13px;
+  }
+
+  .linkTip{
+    font-size: 13px;
+    max-width: 255px;
+  }
+
+}

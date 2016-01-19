@@ -1,0 +1,334 @@
+function initSankey(){
+  $( document ).ready(function() {
+  var sankey;
+  var graph = {"nodes" : [], "links" : []};
+  var placeholder = d3.select(".l-box.asylumseekers:not(.full)");
+  placeholder.append("div").classed("full",true);
+  placeholder.append("div").attr("class", "title_box").html("Asylum applications in Europe January 2015 - December 2015");
+  var totalNum = placeholder.append("div").attr("class", "totalNumber");
+  var labCont = placeholder.append("div").attr("class", "labels");
+  labCont.append("div").attr("class", "labLeft").html("Country of origin");
+  labCont.append("div").attr("class", "labRight").html("Destination");
+  var chrt = placeholder.append("div").attr("id", "chart");
+  var tip = chrt.append("div").attr("class", "sank_tooltip");
+  tip.append("div").attr("class", "tooltip-country");
+  tip.append("div").attr("class", "tooltip-value");
+  tip.append("table").attr("class", "data-table");
+  var linkTip = chrt.append("div").attr("class", "linkTip");
+  placeholder.append("div").attr("class", "applicants_table");
+  placeholder.append("div").attr("class", "notes")
+    .append("div").attr("class", "data-source").html("<strong>Source:</source> <a href='http://ec.europa.eu/eurostat/web/asylum-and-managed-migration/data/database' target='_blank'>Eurostat</a>")
+  var units = "persons";
+  var continents = ["World", "Africa", "Asia", "Europe", "North & Central America", "Oceania", "S. America & Caribbean"];
+  var coloredCountries = ["Syria", "Afghanistan", "Iraq", "Kosovo", "Albania", "Eritrea", "Pakistan", "Germany", "Hungary", "Sweden", "Italy", "Austria", "France", "Belgium"];
+  var colors = ["#ef1941", "#feb800", "#2b4043", "#21c0d3", "#ff4800", "#00b7af", "#0626a", "#008b9e", "#f34500", "#00b3ac", "#21c0d3", "#00626a", "#ef1941", "#feb800"];
+  var dataset;
+  var vpwidth = $("#chart").width();
+  var margin = {top: 10, right: 10, bottom: 10, left: 10},
+      width = vpwidth - margin.left - margin.right,
+      height = 800 - margin.top - margin.bottom;
+
+  var textScale = d3.scale.linear()
+    .range([85, 200]);
+
+  var formatNumber = d3.format(",.0f"),    // zero decimal places
+      format = function(d) { return formatNumber(d) + " " + units; },
+      color = ["#aad801", "#4bc6df"];
+  var tableTemplate;
+
+  //------RESIZE
+  d3.select(window)
+        .on("resize", sizeChange);
+
+  function sizeChange(){
+    //d3.selectAll(".clear").remove();
+    vpwidth = $("#chart").width();
+    width = vpwidth - margin.left - margin.right;
+    drawSankey(graph.nodes, graph.links);
+    
+  }
+
+
+  // append the svg canvas to the page
+  var svg = d3.select("#chart").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var gi = svg.append("g");
+  var gi2 = svg.append("g").attr("class", "nodesg");
+
+
+  d3.csv("data/migr_asyappctzm.csv", function(error, data) {
+    dataset = data;
+    calcData(data);
+  });
+
+  function calcData(data){
+      graph = {"nodes" : [], "links" : []};
+      data.forEach(function (d) {
+        if(d.Y2015M01 != 0 && d.Y2015M01 != ":"){
+          graph.nodes.push({ "name": d.CITIZEN });
+          graph.nodes.push({ "name": d.GEO });
+          graph.links.push({"source": d.CITIZEN,
+                            "target": d.GEO,
+                            "value": (+d.Y2015M01) + (+d.Y2015M02) + (+d.Y2015M03) + (+d.Y2015M04) + (+d.Y2015M05) + (+d.Y2015M06)
+                             + (+d.Y2015M07) + (+d.Y2015M08) + (+d.Y2015M09) + (+d.Y2015M10) + (+d.Y2015M11) + (+d.Y2015M12) });
+        }
+        
+       });
+
+       graph.nodes = d3.keys(d3.nest()
+         .key(function (d) { return d.name; })
+         .map(graph.nodes));
+
+       // loop through each link replacing the text with its index from node
+       graph.links.forEach(function (d, i) {
+         graph.links[i].source = graph.nodes.indexOf(graph.links[i].source);
+         graph.links[i].target = graph.nodes.indexOf(graph.links[i].target);
+       });
+
+
+       //now loop through each nodes to make nodes an array of objects
+       // rather than an array of strings
+       graph.nodes.forEach(function (d, i) {
+         graph.nodes[i] = { "name": d };
+       });
+              
+       drawSankey(graph.nodes, graph.links);
+       
+  }
+
+  
+  function drawSankey(nodes, links){
+    d3.select("#chart").selectAll("g").remove();
+    d3.select("#chart").selectAll("path").remove();
+    sankey = d3.sankey()
+      .nodeWidth(20)
+      .nodePadding(0)
+      .size([width, height])
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .layout(0);
+    var path = sankey.link();
+
+    //total number
+    var tot = d3.sum(nodes, function(d) { return d.x == 0 ? d.value : 0; });
+    d3.select(".totalNumber").html(formatNumber(tot));
+
+    //links
+    svg.selectAll(".link")
+        .data(links)
+      .enter().append("path")
+        //.attr("id", function(d) { return "link"+ d.id; })
+        .style("stroke-width", function(d) { return Math.max(1, d.dy); })
+        .attr("class", "link")
+        .attr("d", path)
+        .on("mouseover", function(){mouseOverLink(this);})
+        .on("mouseout", linkMouseout);
+        //.sort(function(a, b) { return b.source.value - a.source.value; });
+
+    //nodes
+    var node = svg.append("g").selectAll(".node")
+        .data(nodes)
+      .enter().append("g")
+        .attr("class", "node")
+        .attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")"; });
+
+    node.append("rect")
+        .attr("height", function(d) { return Math.max(3, d.dy); })
+        .attr("width", sankey.nodeWidth())
+        .style("fill", function(d) { return coloredCountries.indexOf(d.name) >= 0 ? colors[coloredCountries.indexOf(d.name)] : "#cad1d3";})
+        .on("mouseover",nodeMouseover)
+        .on("mouseout",nodeMouseout);
+
+    textScale.domain(d3.extent(nodes, function(d){return d.value;}));
+
+    node.append("text")
+        .attr("x", -6)
+        .attr("y", function(d) { return d.dy / 2; })
+        .attr("dy", ".35em")
+        .attr("text-anchor", "end")
+        .attr("transform", null)
+        .text(function(d) { return d.name; })
+        .style("font-size", function(){ return textSize = textScale(this.__data__.value).toString() + "%"; })
+        .style("opacity", function(){ return this.__data__.value > 35000 ? 1 : 0; })
+      .filter(function(d) { return d.x < width / 2; })
+        .attr("x", 6 + sankey.nodeWidth())
+        .attr("text-anchor", "start");
+  }
+
+    
+  function nodeMouseover(node, i){
+    d3.selectAll(".link").style("stroke", function(d) { return coloredCountries.indexOf(graph.nodes[i].name) >= 0 ? colors[coloredCountries.indexOf(graph.nodes[i].name)] : "#cad1d3";}).style("stroke-opacity", 0.2);
+    d3.selectAll(".link").filter(function(d) { return d.source.name != graph.nodes[i].name && d.target.name != graph.nodes[i].name }).style("stroke-opacity", 0.0).style("stroke", "#000");
+    d3.select(this).style("stroke", "#000");
+    d3.select(this.parentNode).moveToFront();
+    this.__data__.targetLinks.sort(function(a,b){
+      return parseFloat(b.value) - parseFloat(a.value);
+    });
+
+    this.__data__.sourceLinks.sort(function(a,b){
+      return parseFloat(b.value) - parseFloat(a.value);
+    });
+
+
+    var thiz = this.__data__;
+    var targetData = "";
+    var testArray = [];
+    for (var i = 0; i < this.__data__.targetLinks.length; i++){
+      var objToPush = {};
+      objToPush[this.__data__.targetLinks[i].source.name] = this.__data__.targetLinks[i].value;
+      testArray.push(objToPush);
+    }
+    var newTarData = combineKeyData(testArray.slice(0, 10));
+    for (var prprt in newTarData){
+      targetData += "<tr><td class='cou-name'>" + prprt + " : </td><td class='cou-val'>" + formatNumber(newTarData[prprt]) + "</td></tr>";
+    }
+      
+    var sourceData = "";
+    var newArray = [];
+    for (var z = 0; z < this.__data__.sourceLinks.length; z++){
+      var srcObjToPush = {};
+      srcObjToPush[this.__data__.sourceLinks[z].target.name] = this.__data__.sourceLinks[z].value;
+      newArray.push(srcObjToPush);
+    }
+    var newSrcData = combineKeyData(newArray.slice(0, 10));
+    for (var proprt in newSrcData){
+      sourceData += "<tr><td class='cou-name'>" + proprt + " : </td><td class='cou-val'>" + formatNumber(newSrcData[proprt]) + "</td></tr>";
+    }
+
+    var tipText = "";
+    if (this.__data__.targetLinks.length>0){
+      tipText = targetData;
+    }
+    else {tipText = sourceData;}
+
+    var eX = this.__data__.x;
+    var plchldrWidth = $(".l-box.asylumseekers.chart").width();
+    var tipPos = getTopLeft(thiz.type_id, "tooltip", d3.event);
+    var marLeft = parseInt($("#chart").css('margin-left'));
+
+    if(eX == 0){
+      eX = 0 - marLeft;
+    }else{
+      var tipWidth = $(".sank_tooltip").width();//(d3.select(".sank_tooltip").style("width")).replace(/\px/g, '');
+      eX= plchldrWidth - tipWidth - marLeft - (plchldrWidth*10/100);
+      console.log(marLeft);
+    }
+
+    d3.select(".sank_tooltip").style("top",tipPos.top - 50 + "px").style("left",eX+"px").style("display","block").style("background-color","rgba(255,255,255,0.96)").style("z-index","5");
+    d3.select(".tooltip-country").text(this.__data__.name).style("color", function() { return coloredCountries.indexOf(thiz.name) >= 0 ? colors[coloredCountries.indexOf(thiz.name)] : "#cad1d3";});
+    
+    if(this.__data__.targetLinks.length > 0){
+      d3.select(".tooltip-value").html("<strong>" + formatNumber(this.__data__.value) + "</strong>" + " people have asked for asylum in " + "<strong>" + this.__data__.name + "</strong>" + ".</br></br>" + "<strong>Top countries</strong>");
+    }
+    else{
+      d3.select(".tooltip-value").html("<strong>" + formatNumber(this.__data__.value) + "</strong>" + " people have asked for asylum in other countries" + ".</br></br>" + "<strong>Top countries</strong>");
+    }
+    d3.select(".data-table").html(tipText).style("color", "rgba(51,51,51,.9");
+  
+  }
+
+  function mouseOverLink(obj){
+    d3.select(obj).style("stroke-opacity", 0.5);
+    var tipPos = getTopLeft(obj.id, null, d3.event);
+    var plchldrWidth = $(".l-box.asylumseekers.chart").width()/2;
+    var marLeft = parseInt($("#chart").css('margin-left'));
+    d3.select(".linkTip").style("top",tipPos.top + 50 +"px").style("left",plchldrWidth - 120 - marLeft +"px").style("display","block").style("background-color","rgba(255,255,255,.9)").style("z-index","5").html("<strong>" + formatNumber(obj.__data__.value) + "</strong>" + " people from " + "<strong>" + obj.__data__.source.name + "</strong>" + " asked for asylum in " + "<strong>" + obj.__data__.target.name + "</strong>");
+  }
+
+  function linkMouseout(){
+    d3.selectAll(".link").style("stroke-opacity", 0.05);
+    d3.select(".linkTip").style("display","none").style("z-index","-1");
+  }
+
+  function nodeMouseout(){
+    d3.selectAll(".link").style("stroke-opacity", 0.05).style("stroke", "#000");
+    d3.selectAll("rect").style("stroke", "none");
+    d3.select(".sank_tooltip").style("display","none").style("z-index","-1");
+  }
+
+  function getTopLeft(id, className, event){
+    var ttid;
+    if(className){
+      ttid = "."+ className;
+    }
+    else { ttid = "#"+ id; }
+    var offset = $("#chart").offset();
+    var tipPosition = {"top": event.pageY - offset.top, "left": 0};
+    return tipPosition;
+  }
+
+  function combineKeyData(data) {
+      var output = {}, item;
+      // iterate the outer array to look at each item in that array
+      for (var i = 0; i < data.length; i++) {
+          item = data[i];
+          // iterate each key on the object
+
+          for (var prop in item) {
+              if (item.hasOwnProperty(prop)) {
+                  // if this keys doesn't exist in the output object, add it
+                  if (!(prop in output)) {
+                      output[prop] = 0;
+                  }
+                  // add data onto the end of the key's array
+                  output[prop] += item[prop];
+              }
+          }
+      }
+      return output;
+  }
+
+  d3.selection.prototype.moveToFront = function() {
+    return this.each(function(){
+      this.parentNode.appendChild(this);
+    });
+  };
+
+
+  //------------------------------------------- TABLE ---------------------------------------//
+  d3.csv("data/table_data.csv", function(d){
+    return {
+      name: d.name,
+      applicants : +d.applicants,
+      decisions_total: +d.decisions_total,
+      population: +d.population,
+      positive: +d.positive
+
+    };
+  }, function(error, data) {
+    for (var i = 0; i < data.length; i++){
+      data[i].appls_per_milllion = Math.round((1000000*data[i].applicants)/data[i].population);
+      data[i].positive_rate = ((data[i].positive*100)/data[i].decisions_total).toFixed(1);
+    }
+    tempData = data;
+
+    $.ajax({
+      url: './template/table.html'
+    }).done( function ( template ) {
+        tableTemplate = template;
+        drawTable();
+        $("#ap_tbl").tablesorter();
+
+    });
+
+  });
+  var prevCol = "";
+  function drawTable(){
+    var elem = $(".applicants_table");
+    var ractive = new Ractive({
+      el: elem,
+      template: tableTemplate,
+      //data: tempData
+      data: {
+        as_applicants: tempData
+      }
+    });
+
+  }
+
+});
+}

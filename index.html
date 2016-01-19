@@ -10,6 +10,7 @@
     <link rel='stylesheet' href='css/jquery.nouislider.css'>
     <link rel='stylesheet' href='css/jquery.nouislider.pips.min.css'>
     <link rel='stylesheet' href='css/map.css'>
+    <link rel='stylesheet' href='css/sankey.css'>
 
 </head>
 
@@ -17,13 +18,18 @@
 	
 <script src="js/d3.v3.min.js"></script>
 <script src="js/jquery-1.11.1.min.js"></script>
-<script lang="js/javascript" src="js/xlsx.core.min.js"></script>
+<script src="js/jquery.tablesorter.min.js"></script>
+<script src="js/tabletop.js"></script>
+<script src="js/sankey.js"></script>
+<script src="js/ractive.js"></script>
+<script src="js/xlsx.core.min.js"></script>
 <script src="js/iframeMessenger.js"></script>
 <script src="js/jquery.nouislider.all.min.js" type="text/javascript"></script>
 <script src="js/topojson.v1.min.js"></script>
 <script src="js/d3.geo.projection.v0.min.js"></script>
 <script type="text/javascript" src="js/CustomTooltip.js"></script>
 <script type="text/javascript" src="js/map.js"></script>
+<script type="text/javascript" src="js/asylum_chart.js"></script>
 
 
 <!-- <div class="header" style="text-align:center;">
@@ -45,18 +51,32 @@
 <div class="content">
 </div>
 
+
 <script>
 $( document ).ready(function() {
 
 function toTitleCase(str){
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 };
+  window.onload = function() { init() };
+    //----DEV SPREADSHEET: https://docs.google.com/spreadsheets/d/1PoUSoO2DY_zLMYcyTdjyYv1oUy70EtuBJFCJIChUy-E/pubhtml
+    //----UP SPREADSHEET: https://docs.google.com/spreadsheets/d/1go-NRRwyTgwZQaC45dPSh6XFopFZnB0M3PA6L405Aas/pubhtml
+    var public_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1PoUSoO2DY_zLMYcyTdjyYv1oUy70EtuBJFCJIChUy-E/pubhtml';
 
-$.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
-    sheet = d3.nest()
+    function init() {
+      Tabletop.init( { key: public_spreadsheet_url,
+                       callback: showInfo,
+                       simpleSheet: true } )
+    }
+
+    function showInfo(data, tabletop) {
+      initDashboard(data);
+  }
+function initDashboard(data){
+    var sheet = d3.nest()
     .key(function(d) { return d.theme})
-    .sortKeys(d3.ascending)
-    .entries(sheet.result);
+    //.sortKeys(d3.ascending)
+    .entries(data);
 
     sheet = sheet.filter(function(d,i){return d.values[0].hidden == "n"});
     
@@ -67,7 +87,7 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
     .attr({
         class: function(d,i){
             // console.log(d)
-            if((d.content).indexOf("map") > -1){
+            if((d.content).indexOf("map") > -1 || d.theme == "asylum seekers" & d.type == "chart"){
                 return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-2-3 pure-u-xl-3-4'
             }else if(d.theme == "flows" & d.type == "intro"){
                 return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-1-3 pure-u-xl-1-4'
@@ -207,6 +227,7 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
       sizeChange();
       checkUrl();
       callMap(parentUrl, frontUrl, frontUrlIt, frontUrlEn);
+      initSankey();
       iframeMessenger.enableAutoResize();
     }
 
@@ -408,7 +429,7 @@ $.getJSON("https://sheetsu.com/apis/ed972e3a").success(function(sheet){
           console.log("Resized map")
           sizeChangeMap();
         });
-})
+}
 
 String.prototype.ucfirst = function()
 {
