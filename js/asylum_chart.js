@@ -15,6 +15,7 @@ function initSankey(){
   tip.append("div").attr("class", "tooltip-value");
   tip.append("table").attr("class", "data-table");
   var linkTip = chrt.append("div").attr("class", "linkTip");
+  placeholder.append("div").attr("class", "title_box").html("Asylum applications in Europe 2014");
   placeholder.append("div").attr("class", "applicants_table");
   placeholder.append("div").attr("class", "notes")
     .append("div").attr("class", "data-source").html("<strong>Source:</source> <a href='http://ec.europa.eu/eurostat/web/asylum-and-managed-migration/data/database' target='_blank'>Eurostat</a>")
@@ -304,7 +305,17 @@ function initSankey(){
       data[i].appls_per_milllion = Math.round((1000000*data[i].applicants)/data[i].population);
       data[i].positive_rate = ((data[i].positive*100)/data[i].decisions_total).toFixed(1);
     }
-    tempData = data;
+
+    var applsMax = d3.max(data, function(d){ return d.applicants;});
+    var decMax = d3.max(data, function(d){ return d.decisions_total;});
+    var applspmlnMax = d3.max(data, function(d){ return d.appls_per_milllion;});
+
+    tempData = {
+      tabData: data,
+      applicantsMax: applsMax,
+      decisionsMax: decMax,
+      appls_per_milllionMax: applspmlnMax
+    };
 
     $.ajax({
       url: './template/table.html'
@@ -324,7 +335,10 @@ function initSankey(){
       template: tableTemplate,
       //data: tempData
       data: {
-        as_applicants: tempData
+        as_applicants: tempData,
+        format: function ( num ) {
+          return num.toFixed( 1 );
+        }
       }
     });
 

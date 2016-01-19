@@ -12,13 +12,27 @@
   
   <tbody>
   {{#as_applicants}}
+  {{#tabData}}
     <tr>
       <td class="column">{{name}}</td>
-      <td class="column">{{applicants}}</td>
-      <td class="column">{{appls_per_milllion}}</td>
-      <td class="column">{{decisions_total}}</td>
-      <td class="column">{{positive_rate}}</td>
+      <td class="column">
+        {{applicants}}
+        <div class="appls_bar" style="width:{{format(applicants*100/applicantsMax)}}%"></div>
+      </td>
+      <td class="column">
+        {{appls_per_milllion}}
+        <div class="appls_bar" style="width:{{format(appls_per_milllion*100/appls_per_milllionMax)}}%"></div>
+      </td>
+      <td class="column">
+        {{decisions_total}}
+        <div class="appls_bar" style="width:{{format(decisions_total*100/decisionsMax)}}%"></div>
+      </td>
+      <td class="column">
+        {{positive_rate}}
+        <div class="appls_bar" style="width:{{positive_rate}}%"></div>
+      </td>
     </tr>
+    {{/tabData}}
   {{/as_applicants}}
   </tbody>
 </table>
