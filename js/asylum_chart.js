@@ -216,10 +216,15 @@ function initSankey(){
     }else{
       var tipWidth = $(".sank_tooltip").width();//(d3.select(".sank_tooltip").style("width")).replace(/\px/g, '');
       eX= plchldrWidth - tipWidth - marLeft - (plchldrWidth*10/100);
-      console.log(marLeft);
+      
     }
 
-    d3.select(".sank_tooltip").style("top",tipPos.top - 50 + "px").style("left",eX+"px").style("display","block").style("background-color","rgba(255,255,255,0.96)").style("z-index","5");
+    var heightSum = tipPos.top + $(".sank_tooltip").height();
+    var tipTop;
+    heightSum > $("#chart").height() ? tipTop = tipPos.top - (heightSum - $("#chart").height()) - 20 : tipTop = tipPos.top;
+    
+
+    d3.select(".sank_tooltip").style("top",tipTop + "px").style("left",eX+"px").style("display","block").style("background-color","rgba(255,255,255,0.96)").style("z-index","5");
     d3.select(".tooltip-country").text(this.__data__.name).style("color", function() { return coloredCountries.indexOf(thiz.name) >= 0 ? colors[coloredCountries.indexOf(thiz.name)] : "#cad1d3";});
     
     if(this.__data__.targetLinks.length > 0){
@@ -235,9 +240,12 @@ function initSankey(){
   function mouseOverLink(obj){
     d3.select(obj).style("stroke-opacity", 0.5);
     var tipPos = getTopLeft(obj.id, null, d3.event);
+    var heightSum = tipPos.top + 50 + $(".linkTip").height();
+    var tipTop;
+    heightSum > $("#chart").height() ? tipTop = tipPos.top - (heightSum - $("#chart").height()) - 50 : tipTop = tipPos.top + 50;
     var plchldrWidth = $(".l-box.asylumseekers.chart").width()/2;
     var marLeft = parseInt($("#chart").css('margin-left'));
-    d3.select(".linkTip").style("top",tipPos.top + 50 +"px").style("left",plchldrWidth - 120 - marLeft +"px").style("display","block").style("background-color","rgba(255,255,255,.9)").style("z-index","5").html("<strong>" + formatNumber(obj.__data__.value) + "</strong>" + " people from " + "<strong>" + obj.__data__.source.name + "</strong>" + " asked for asylum in " + "<strong>" + obj.__data__.target.name + "</strong>");
+    d3.select(".linkTip").style("top",tipTop +"px").style("left",plchldrWidth - 120 - marLeft +"px").style("display","block").style("background-color","rgba(255,255,255,.9)").style("z-index","5").html("<strong>" + formatNumber(obj.__data__.value) + "</strong>" + " people from " + "<strong>" + obj.__data__.source.name + "</strong>" + " asked for asylum in " + "<strong>" + obj.__data__.target.name + "</strong>");
   }
 
   function linkMouseout(){

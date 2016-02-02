@@ -11,12 +11,13 @@
     <link rel='stylesheet' href='css/jquery.nouislider.pips.min.css'>
     <link rel='stylesheet' href='css/map.css'>
     <link rel='stylesheet' href='css/sankey.css'>
+    <link rel="stylesheet" href="css/ranks.css">
 
 </head>
 
 <body>
 	
-<script src="js/d3.v3.min.js"></script>
+<script src="js/d3.min.js"></script>
 <script src="js/jquery-1.11.1.min.js"></script>
 <script src="js/jquery.tablesorter.min.js"></script>
 <script src="js/tabletop.js"></script>
@@ -30,6 +31,9 @@
 <script type="text/javascript" src="js/CustomTooltip.js"></script>
 <script type="text/javascript" src="js/map.js"></script>
 <script type="text/javascript" src="js/asylum_chart.js"></script>
+<script src="js/ranks.js"></script>
+<script src="js/demographics.js"></script>
+<script src="js/countries.js"></script>
 
 
 <!-- <div class="header" style="text-align:center;">
@@ -86,9 +90,21 @@ function initDashboard(data){
     cards.enter().append('div')
     .attr({
         class: function(d,i){
-            // console.log(d)
-            if((d.content).indexOf("map") > -1 || d.theme == "asylum seekers" & d.type == "chart"){
-                return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-2-3 pure-u-xl-3-4'
+            console.log(d)
+            if( d.type == "intro"){
+              return 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-5 pure-u-xl-1-5'
+            }
+            else if(d.theme == "counter" & d.type == "chart"){
+              return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-6-24 pure-u-xl-6-24'
+            }
+            else if(d.theme == "daily arrivals" & d.type == "chart"){
+              return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-1-3 pure-u-xl-1-3'
+            }
+            else if(d.theme == "demographics" & d.type == "chart"){
+              return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-2-5 pure-u-xl-2-5'
+            }
+            else if((d.content).indexOf("map") > -1 || d.theme == "asylum seekers" & d.type == "chart" || d.theme == "origins" & d.type == "chart"){
+                return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-4-5 pure-u-xl-4-5'
             }else if(d.theme == "flows" & d.type == "intro"){
                 return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-1-3 pure-u-xl-1-4'
             }else{
@@ -114,7 +130,7 @@ function initDashboard(data){
     
     
     // console.log(d3.select('.l-box').node().getBoundingClientRect());
-
+    var format = d3.format(",d");
     var dataset = {};
     var dt = {};
     var worksheet,csvFile,y,max;
@@ -125,7 +141,7 @@ function initDashboard(data){
 
     // var clientWidth = document.getElementById('placeholder').clientWidth;
     var margin = {top: 20, right: 25, bottom: 120, left: 42, base:30},
-        width = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().width-(margin.left+margin.right+4),
+        width = d3.select('.l-box.chart.dailyarrivals').node().getBoundingClientRect().width-(margin.left+margin.right+4),
         height;
     var monthsArr = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     var monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -141,7 +157,7 @@ function initDashboard(data){
       //if(vpwidth > 900){
         //d3.select("#svgCont").style("overflow-x", "visible");
         // clientWidth = document.getElementById('placeholder').clientWidth;
-        width = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().width-(margin.left+margin.right+4);
+        width = d3.select('.l-box.chart.dailyarrivals').node().getBoundingClientRect().width-(margin.left+margin.right+4);
         parentUrl == frontUrl || parentUrl == frontUrlIt || parentUrl == frontUrlEn ? height = 97 : height = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().height-margin.bottom;
         x.range([0, width]);
         xMonth.range([0, width]);
@@ -228,6 +244,12 @@ function initDashboard(data){
       checkUrl();
       callMap(parentUrl, frontUrl, frontUrlIt, frontUrlEn);
       initSankey();
+      initRankings();
+      initCounter();
+      initDemographics();
+      $("<div class='pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-5 pure-u-xl-1-5'></div>").insertBefore( $("#svg_croatia").parent() );
+      $("<div class='pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-5 pure-u-xl-1-5'></div>").insertBefore( $("#svg_slovenia").parent() );
+      $("<div class='pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-5 pure-u-xl-1-5'></div>").insertBefore( $("#svg_germany").parent() );
       iframeMessenger.enableAutoResize();
     }
 
@@ -235,7 +257,7 @@ function initDashboard(data){
 
     function drawChart(data, cntry){
       var bisectDate = d3.bisector(function(d) { return d.date; }).left;
-      var format = d3.format(",d");
+      
       y = d3.scale.linear().range([height, 0]);
       y.domain([0, max]);
       var xAxis = d3.svg.axis()
@@ -322,11 +344,11 @@ function initDashboard(data){
           .call(xAxisMonth)
         .selectAll(".tick text")
           .attr("y", 20)
-          .attr("x", 80 / 2)
+          .attr("x", 70 / 2)
           .style("fill", "#999")
           .style("text-anchor", "middle");
 
-      d3.select(".month").selectAll(".tick line")
+      d3.selectAll(".month").selectAll(".tick line")
           .attr("y1", 20);
 
       axisY.append("svg")
@@ -413,6 +435,112 @@ function initDashboard(data){
         $( "#svg_austria" ).parent().css('width', '100%');
         $( ".l-box.dailyarrivals" ).css('min-height', '220px')
         $( "#svg_austria" ).parent().insertBefore( "#svg_hungary" ).parent();
+      }
+    }
+
+    function initCounter(){
+      d3.json("http://data.unhcr.org/api/stats/mediterranean/arrivals_by_year.json", function(data) {
+        data = d3.nest()
+          .key(function(d){ return d.year})
+          .map(data);
+        drawArrByYear(data);
+      });
+
+      d3.json("http://data.unhcr.org/api/stats/mediterranean/deaths.json", function(data) {
+        drawArea(data);
+      });
+
+      d3.json("http://data.unhcr.org/api/stats/mediterranean/monthly_arrivals_by_country.json", function(data) {
+        data = d3.nest()
+          //.key(function(d){ return d.country;})
+          .key(function(d){ return d.month;})
+          .key(function(d){ return d.year;})
+          .map(data);
+        
+        drawArrByMonth(data);
+      });
+
+      function drawArrByYear(data){
+        d3.select(".l-box.counter:not(.full)").append("div").attr("class", "chart_title").html("Arrivals by sea 2016");
+        d3.select(".l-box.counter:not(.full)").append("div").attr("class", "arr2016").html(format(data["2016"][0].value));
+        d3.select(".l-box.counter:not(.full)").append("div").attr("class", "titleLast").html("Arrivals by sea 2015");
+        d3.select(".l-box.counter:not(.full)").classed("full",true).append("div").attr("class", "arr2015").html(format(data["2015"][0].value));
+      }
+
+      function drawArea(data){
+        var margin = {top: 20, right: 30, bottom: 20, left: 50},
+            width = $(".l-box.counter:not(.full)").width() - margin.left - margin.right,
+            height = 270 - margin.top - margin.bottom;
+
+        var x = d3.scale.ordinal()
+            .domain(data.map(function(d) { return d.year; }))
+            .rangeRoundPoints([0, width]);
+
+        var y = d3.scale.linear()
+            .domain([0, d3.max(data, function(d) { return d.value; })])
+            .range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+        var area = d3.svg.area()
+            .x(function(d) { return x(d.year); })
+            .y0(height)
+            .y1(function(d) { return y(d.value); });
+
+        d3.select(".l-box.counter:not(.full)").append("div").attr("class", "titleLast").html("Dead/missing").style("margin-top", "0");
+
+        var svg = d3.select(".l-box.counter:not(.full)").classed("full", true)
+          .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        svg.append("path")
+            .datum(data)
+            .attr("class", "area")
+            .attr("d", area);
+
+        svg.selectAll("circles")
+            .data(data)
+          .enter().append("circle")
+            .attr("class", "circ")
+            .attr("r", 5)
+            .attr("cx", function(d){ return x(d.year); })
+            .attr("cy", function(d){ return y(d.value); });
+
+        svg.selectAll("texts")
+            .data(data)
+          .enter().append("text")
+            .attr("class", "deathNum")
+            .text(function(d){ return d.value; })
+            .attr("x", function(d){ return x(d.year) + 6; })
+            .attr("y", function(d){ return y(d.value) - 6; });
+
+        svg.append("g")
+            .attr("class", "x axis deaths")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+      }
+
+      function drawArrByMonth(data){
+        var thisYearSum = d3.sum(data[new Date().getMonth() + 1][new Date().getFullYear()], function(d){ return d.value});
+        var lastYearSum = d3.sum(data[new Date().getMonth() + 1][new Date().getFullYear() - 1], function(d){ return d.value});
+
+        d3.select(".l-box.counter:not(.full)").append("div").attr("class", "chart_title").html("Monthly sea arrivals in "+ monthsArr[new Date().getMonth()] + " " + new Date().getFullYear());
+        d3.select(".l-box.counter:not(.full)").append("div").attr("class", "arr2016").html(format(thisYearSum));
+        d3.select(".l-box.counter:not(.full)").append("div").attr("class", "titleLast").html("Monthly sea arrivals in "+ monthsArr[new Date().getMonth()] + " " + (new Date().getFullYear() - 1));
+        d3.select(".l-box.counter:not(.full)").classed("full",true).append("div").attr("class", "arr2015").html(format(lastYearSum));
       }
     }
  

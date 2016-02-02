@@ -51,12 +51,13 @@ $(document).ready(function(){
 
     $("#slider-step").noUiSlider_pips({
       mode: 'values',
-      values: [0, dates.length - curMonth],
+      values: [0, 12, dates.length - curMonth],
       density: 4.5
     });
     //$( "div.noUi-value-large:contains('"+ dates.length - 25 +"')" ).html('2013');
     $( "div.noUi-value-large:contains("+ (0) +")" ).html('2014');
-    $( "div.noUi-value-large:contains("+ (dates.length - curMonth) +")" ).html('2015');
+    $( "div.noUi-value-large:contains("+ (12) +")" ).html('2015');
+    $( "div.noUi-value-large:contains("+ (dates.length - curMonth) +")" ).html('2016');
   }
 
 
@@ -149,7 +150,7 @@ function drawMap(circlesData) {
         var radius = d3.scale.sqrt();
         radius1 = radius
           .domain([0, d3.max(data, function(d){return d.value})])
-          .range([0, (width * 4.5)/100]);
+          .range([0, (width * 8.5)/100]);
 
         circles.selectAll("circle")
           .data(nest, function(d){return d.key;})//(data.filter(function(d) { return d.month == selectedMonth && d.year == selectedYear ? d : ""; }))

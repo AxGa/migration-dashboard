@@ -1,0 +1,104 @@
+body, input, textarea {
+  font-family: "zona_prothin", Arial, serif;
+  font-size: 12px;
+}
+
+a, a:visited, a:focus {
+  color: black;
+}
+
+.valueLab{
+  font-family: "robotobold", Arial;
+  font-size: 14px;
+  pointer-events: none;
+  opacity: 0;
+  text-shadow: none;
+}
+.valueLab:hover{
+  cursor: default;
+}
+.valueLab.highl{
+  opacity: 1;
+}
+.valueLab.unhighl{
+  opacity: 0;
+}
+
+.year-title {
+  font-size: 14px;
+  font-weight: bold;
+  fill: #767676;
+}
+
+.end-title {
+  font-size: 13px;
+  pointer-events: none;
+  opacity: 1;
+}
+
+.pill {
+  stroke-linejoin: round;
+}
+
+.pill-outer {
+  stroke-linejoin: round;
+}
+
+.bump_link {
+  stroke-width: 0.5;
+  stroke: #bdbdbd;
+}
+
+.pill rect.no-stroke {
+  stroke: none;
+  stroke-width:0;
+}
+
+.pill-outline {
+  fill:none;
+}
+
+.highlight {
+  stroke: black;
+  stroke-width:2;
+}
+
+.pill.unhighlight {
+  opacity: 0.5;
+}
+
+.highlight .pill-outline{
+  stroke: black;
+  stroke-width:2;
+}
+
+.start-cause {
+  -webkit-transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  -ms-transition: opacity .25s ease-in-out;
+  -o-transition: opacity .25s ease-in-out;
+  transition: opacity .25s ease-in-out;
+}
+
+.start-cause.highlight {
+  stroke-width:1;
+}
+
+.start-cause.unhighlight {
+  opacity: 0.4;
+}
+
+.cause-title {
+  cursor: default;
+}
+
+.pill-use{
+	opacity: 0.8;
+}
+
+@media (max-width: 610px) {
+  .end-title {
+    opacity: 0;
+  }
+
+}
