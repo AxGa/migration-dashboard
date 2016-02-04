@@ -90,17 +90,14 @@ function initDashboard(data){
     cards.enter().append('div')
     .attr({
         class: function(d,i){
-            console.log(d)
+            //console.log(d)
             if( d.type == "intro"){
               return 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-5 pure-u-xl-1-5'
             }
             else if(d.theme == "counter" & d.type == "chart"){
               return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-6-24 pure-u-xl-6-24'
             }
-            else if(d.theme == "daily arrivals" & d.type == "chart"){
-              return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-1-3 pure-u-xl-1-3'
-            }
-            else if(d.theme == "demographics" & d.type == "chart"){
+            else if(d.theme == "demographics" & d.type == "chart" ||d.theme == "daily arrivals" & d.type == "chart"){
               return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-2-5 pure-u-xl-2-5'
             }
             else if((d.content).indexOf("map") > -1 || d.theme == "asylum seekers" & d.type == "chart" || d.theme == "origins" & d.type == "chart"){
@@ -162,7 +159,7 @@ function initDashboard(data){
         x.range([0, width]);
         xMonth.range([0, width]);
         drawChart(dt.greece, "greece");
-        //drawChart(dt.fyrom, "fyrom");
+        drawChart(dt.fyrom, "fyrom");
         drawChart(dt.serbia, "serbia");
         drawChart(dt.croatia, "croatia");
         drawChart(dt.hungary, "hungary");
@@ -247,9 +244,9 @@ function initDashboard(data){
       initRankings();
       initCounter();
       initDemographics();
-      $("<div class='pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-5 pure-u-xl-1-5'></div>").insertBefore( $("#svg_croatia").parent() );
-      $("<div class='pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-5 pure-u-xl-1-5'></div>").insertBefore( $("#svg_slovenia").parent() );
-      $("<div class='pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-5 pure-u-xl-1-5'></div>").insertBefore( $("#svg_germany").parent() );
+      $("<div class='pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-5 pure-u-xl-1-5'></div>").insertBefore( $("#svg_serbia").parent() );
+      $("<div class='pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-5 pure-u-xl-1-5'></div>").insertBefore( $("#svg_hungary").parent() );
+      $("<div class='pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-5 pure-u-xl-1-5'></div>").insertBefore( $("#svg_austria").parent() );
       iframeMessenger.enableAutoResize();
     }
 
@@ -537,9 +534,9 @@ function initDashboard(data){
         var thisYearSum = d3.sum(data[new Date().getMonth() + 1][new Date().getFullYear()], function(d){ return d.value});
         var lastYearSum = d3.sum(data[new Date().getMonth() + 1][new Date().getFullYear() - 1], function(d){ return d.value});
 
-        d3.select(".l-box.counter:not(.full)").append("div").attr("class", "chart_title").html("Monthly sea arrivals in "+ monthsArr[new Date().getMonth()] + " " + new Date().getFullYear());
+        d3.select(".l-box.counter:not(.full)").append("div").attr("class", "chart_title").html("Sea arrivals in "+ monthsArr[new Date().getMonth()] + " " + new Date().getFullYear());
         d3.select(".l-box.counter:not(.full)").append("div").attr("class", "arr2016").html(format(thisYearSum));
-        d3.select(".l-box.counter:not(.full)").append("div").attr("class", "titleLast").html("Monthly sea arrivals in "+ monthsArr[new Date().getMonth()] + " " + (new Date().getFullYear() - 1));
+        d3.select(".l-box.counter:not(.full)").append("div").attr("class", "titleLast").html("Sea arrivals in "+ monthsArr[new Date().getMonth()] + " " + (new Date().getFullYear() - 1));
         d3.select(".l-box.counter:not(.full)").classed("full",true).append("div").attr("class", "arr2015").html(format(lastYearSum));
       }
     }

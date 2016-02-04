@@ -8,7 +8,7 @@ function callMap(pUrl, fUrl, furlIt, furlEn){
   var mapData, circlesData1, circlesData2;
   var dates = [];
   var placeholder = d3.select(".l-box.flows:not(.full)").classed("full",true);//$(".lbox.flows").not(".full").addClass( "full" );
-  placeholder.append("span").attr("id", "slider-step-value");
+  placeholder.append("div").attr("id", "slider-step-value");
   placeholder.append("div").attr("id", "map");
   placeholder.append("div").attr("id", "playBtn");
   placeholder.append("div").attr("id", "slider-step");

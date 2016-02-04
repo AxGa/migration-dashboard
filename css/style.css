@@ -43,6 +43,10 @@ body,.pure-g [class *="pure-u"] {
   float: left;
 }
 
+.pure-u-xl-6-24{
+  width: 25.7%;
+}
+
 .axisY{
   position: absolute;
   /*background-color: #fff;*/
@@ -84,7 +88,6 @@ body,.pure-g [class *="pure-u"] {
   width: calc(100% - 35px);
   margin-top: 10px;
   margin-bottom: 5px;
-  margin-left: 15px;
   height: 38px;
 }
 
@@ -176,6 +179,7 @@ body,.pure-g [class *="pure-u"] {
 .pure-g{
   margin: 20px 0 20px 0;
   padding-bottom: 15px;
+  border-top: 36px #363636 solid;
 }
 
 .header h1{
@@ -187,11 +191,18 @@ body,.pure-g [class *="pure-u"] {
   font-size: 1.8em;
   padding: 0px 10px;
   font-family: zona_probold;
+  position: relative;
+  top: -37px;
+  color: #1BBECF;
+  margin-bottom: 0;
+  margin-top: 0;
 }
 .l-box p{
   padding: 10px;
   font-size: 15px;
   margin-right: 34px;
+  margin-top: 0;
+  padding-top: 0;
 }
 .pure-g:nth-child(even) .l-box{ border:2px solid transparent;}
 /*.pure-g:nth-child(odd) > div:nth-child(1) .l-box{background-color:#1BBECF;}
@@ -235,10 +246,15 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
 
 }
 
+.circ{
+  fill: none;
+  stroke: #666;
+  stroke-width: 2px;
+}
+
 .chart_title{
   font-family: "zona_probold";
-  color: #fff;
-  background-color: #1BBECF;
+  color: #1BBECF;
   padding: 3px;
   font-size: 14px;
 }
@@ -246,14 +262,12 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
 .titleLast{
   font-family: "zona_probold";
   color: #767676;
-  background-color: #ededed;
   padding: 3px;
   font-size: 14px;
   margin-top: 20px;
 }
 
 .titleYel{
-  background-color: #fcb615;
   font-family: "zona_probold";
   padding: 3px;
   font-size: 14px;
@@ -269,11 +283,11 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
   color: #767676;
 }
 
-.areaL{
+.left{
   fill:#1BBECF;
 }
 
-.areaR{
+.right{
   fill:rgb(239, 25, 65);
 }
 

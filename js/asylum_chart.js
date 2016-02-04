@@ -102,6 +102,7 @@ function initSankey(){
 
   
   function drawSankey(nodes, links){
+    function isOdd(num) { return num % 2;}
     d3.select("#chart").selectAll("g").remove();
     d3.select("#chart").selectAll("path").remove();
     sankey = d3.sankey()
@@ -131,16 +132,17 @@ function initSankey(){
 
     //nodes
     var node = svg.append("g").selectAll(".node")
-        .data(nodes)
+        .data(nodes.sort(function (a,b) {return d3.ascending(a.value, b.value); }))
       .enter().append("g")
         .attr("class", "node")
+        .attr("id", function(d){ return continentStrip(d.name); })
         .attr("transform", function(d) {
         return "translate(" + d.x + "," + d.y + ")"; });
 
     node.append("rect")
         .attr("height", function(d) { return Math.max(3, d.dy); })
         .attr("width", sankey.nodeWidth())
-        .style("fill", function(d) { return coloredCountries.indexOf(d.name) >= 0 ? colors[coloredCountries.indexOf(d.name)] : "#cad1d3";})
+        .style("fill", checkPositionAndColorize)
         .on("mouseover",nodeMouseover)
         .on("mouseout",nodeMouseout);
 
@@ -162,7 +164,8 @@ function initSankey(){
 
     
   function nodeMouseover(node, i){
-    d3.selectAll(".link").style("stroke", function(d) { return coloredCountries.indexOf(graph.nodes[i].name) >= 0 ? colors[coloredCountries.indexOf(graph.nodes[i].name)] : "#cad1d3";}).style("stroke-opacity", 0.2);
+    var col = d3.select("#" + node.name).select("rect").style("fill");
+    d3.selectAll(".link").style("stroke", col).style("stroke-opacity", 0.2);
     d3.selectAll(".link").filter(function(d) { return d.source.name != graph.nodes[i].name && d.target.name != graph.nodes[i].name }).style("stroke-opacity", 0.0).style("stroke", "#000");
     d3.select(this).style("stroke", "#000");
     d3.select(this.parentNode).moveToFront();
@@ -215,17 +218,19 @@ function initSankey(){
       eX = 0 - marLeft;
     }else{
       var tipWidth = $(".sank_tooltip").width();//(d3.select(".sank_tooltip").style("width")).replace(/\px/g, '');
-      eX= plchldrWidth - tipWidth - marLeft - (plchldrWidth*10/100);
-      
+      eX= plchldrWidth - tipWidth - marLeft - (plchldrWidth*10/100);      
     }
 
     var heightSum = tipPos.top + $(".sank_tooltip").height();
     var tipTop;
-    heightSum > $("#chart").height() ? tipTop = tipPos.top - (heightSum - $("#chart").height()) - 20 : tipTop = tipPos.top;
+    d3.select("#" + node.name).select("rect")[0][0].__data__.y < 405 ?
+    tipTop = d3.select("#" + node.name).select("rect")[0][0].__data__.y + (d3.select("#" + node.name).select("rect")[0][0].__data__.dy/2) :
+    tipTop = 400;
+    //heightSum > $("#chart").height() - 30 ? tipTop = tipPos.top - (heightSum - $("#chart").height()) - 70 : tipTop = tipPos.top;
     
 
     d3.select(".sank_tooltip").style("top",tipTop + "px").style("left",eX+"px").style("display","block").style("background-color","rgba(255,255,255,0.96)").style("z-index","5");
-    d3.select(".tooltip-country").text(this.__data__.name).style("color", function() { return coloredCountries.indexOf(thiz.name) >= 0 ? colors[coloredCountries.indexOf(thiz.name)] : "#cad1d3";});
+    d3.select(".tooltip-country").text(this.__data__.name).style("color", col);
     
     if(this.__data__.targetLinks.length > 0){
       d3.select(".tooltip-value").html("<strong>" + formatNumber(this.__data__.value) + "</strong>" + " people have asked for asylum in " + "<strong>" + this.__data__.name + "</strong>" + ".</br></br>" + "<strong>Top countries</strong>");
@@ -291,6 +296,43 @@ function initSankey(){
       return output;
   }
 
+  var prevCol = "";
+  var prevColR = "";
+  function checkPositionAndColorize(obj){
+    if(obj.x == 0 && prevCol == "") {
+        prevCol = "#1BBECF";
+        return "#1BBECF";
+      }
+      else if(obj.x == 0 && prevCol == "#1BBECF"){
+        prevCol = "#fcb615";
+        return "#fcb615";
+      }
+      else if(obj.x == 0 && prevCol == "#fcb615"){
+        prevCol = "#1BBECF";
+        return "#1BBECF";
+      }
+      else if(obj.x !== 0 && prevColR == "") {
+        prevColR = "#1BBECF";
+        return "#1BBECF";
+      }
+      else if(obj.x !== 0 && prevColR == "#1BBECF"){
+        prevColR = "#fcb615";
+        return "#fcb615";
+      }
+      else if(obj.x !== 0 && prevColR == "#fcb615"){
+        prevColR = "#1BBECF";
+        return "#1BBECF";
+      }
+  }
+
+  function continentStrip(continent){
+      var str = continent.replace(/\s+/g, '');
+      var str2 = str.replace(/\.+/g, '');
+      var str3 = str.replace(/\'+/g, '');
+      var strFin = str3.replace(/\-/g, '');
+      return strFin;
+  }
+
   d3.selection.prototype.moveToFront = function() {
     return this.each(function(){
       this.parentNode.appendChild(this);
@@ -335,7 +377,7 @@ function initSankey(){
     });
 
   });
-  var prevCol = "";
+  
   function drawTable(){
     var elem = $(".applicants_table");
     var ractive = new Ractive({
