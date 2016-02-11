@@ -50,7 +50,7 @@ function initRankings(){
       {func:oneColor, opts: {colors:["#951c55"]}, id:"COL", name:"Colombia"},
       {func:oneColor, opts: {colors:["#ff9b0b"]}, id:"AZE", name:"Azerbaijan"},
       {func:oneColor, opts: {colors:["#363636"]}, id:"AGO", name:"Angola"},
-      {func:oneColor, opts: {colors:["#951c55"]}, id:"MDA", name:"Moldova"},
+      {func:oneColor, opts: {colors:["#4bc6df"]}, id:"MDA", name:"Moldova"},
       {func:oneColor, opts: {colors:["#4bc6df"]}, id:"CZE", name:"Czech Rep."},
       {func:oneColor, opts: {colors:["#951c55"]}, id:"HTI", name:"Haiti"},
       {func:oneColor, opts: {colors:["#363636"]}, id:"COD", name:"Congo DR"},
@@ -307,6 +307,21 @@ function initRankings(){
 
 
     function mouseover(d,i) {
+      var leftLab = d3.selectAll(".start-cause").filter(function(e) { return e.id === d.id; });
+      var leftLabY = d3.select(leftLab[0][0]).attr("y");
+      var rightLab = d3.selectAll(".end-title").filter(function(e) { return e.id === d.id; });
+      var tRightLab = d3.transform(d3.select(rightLab[0][0]).attr("transform"));
+      var t = d3.transform(d3.select(this).attr("transform"));
+
+      if (leftLabY > 450 && tRightLab.translate[1] > 450){
+        console.log("TRUE");
+        d3.select(this.parentNode).append("text")
+          .attr("class", "contry")
+          .attr("y", t.translate[1] - 10)
+          .attr("text-anchor", "middle")
+          .attr("x", pillWidth/2)
+          .text(rightLab[0][0].innerHTML);
+      }
       defs.selectAll(".pill")
         .classed("highlight", function() {return d3.select(this).attr("id") === d.id;})
         .classed("unhighlight", function(e) {return e.id !== d.id; });
@@ -314,7 +329,7 @@ function initRankings(){
         .classed("highlight", function(e) {return e.id === d.id; })
         .classed("unhighlight", function(e) {return e.id !== d.id; });
       g.selectAll(".start-cause")
-        .classed("highlight", function(e) {return e.id === d.id; })
+        .classed("highlight", function(e) { return e.id === d.id; })
         .classed("unhighlight", function(e) {return e.id !== d.id; });
       g.selectAll(".valueLab")
         .classed("highl", function(e) {return e.id === d.id; })
@@ -322,6 +337,7 @@ function initRankings(){
     }
 
     function mouseout(d,i) {
+      d3.selectAll(".contry").remove();
       defs.selectAll(".pill").classed("highlight", false);
       defs.selectAll(".pill").classed("unhighlight", false);
       g.selectAll(".bump_link").classed("highlight", false);

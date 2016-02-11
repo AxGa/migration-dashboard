@@ -11,6 +11,7 @@ body {
   font-family: "zona_probold";
   padding: 3px;
   font-size: 14px;
+  color: #767676;
 }
 
 #chart{
@@ -154,7 +155,7 @@ table.data-table {
 .appls_bar{
   width: 100%;
   height: 10px;
-  background-color: #1BBECF;
+  background-color: #ff9b0b;
 }
 
 .tab_header{

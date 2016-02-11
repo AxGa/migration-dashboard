@@ -300,28 +300,28 @@ function initSankey(){
   var prevColR = "";
   function checkPositionAndColorize(obj){
     if(obj.x == 0 && prevCol == "") {
-        prevCol = "#1BBECF";
-        return "#1BBECF";
+        prevCol = "#353535";
+        return "#353535";
       }
-      else if(obj.x == 0 && prevCol == "#1BBECF"){
-        prevCol = "#fcb615";
-        return "#fcb615";
+      else if(obj.x == 0 && prevCol == "#353535"){
+        prevCol = "#ff9b0b";
+        return "#ff9b0b";
       }
-      else if(obj.x == 0 && prevCol == "#fcb615"){
-        prevCol = "#1BBECF";
-        return "#1BBECF";
+      else if(obj.x == 0 && prevCol == "#ff9b0b"){
+        prevCol = "#353535";
+        return "#353535";
       }
       else if(obj.x !== 0 && prevColR == "") {
-        prevColR = "#1BBECF";
-        return "#1BBECF";
+        prevColR = "#353535";
+        return "#353535";
       }
-      else if(obj.x !== 0 && prevColR == "#1BBECF"){
-        prevColR = "#fcb615";
-        return "#fcb615";
+      else if(obj.x !== 0 && prevColR == "#353535"){
+        prevColR = "#ff9b0b";
+        return "#ff9b0b";
       }
-      else if(obj.x !== 0 && prevColR == "#fcb615"){
-        prevColR = "#1BBECF";
-        return "#1BBECF";
+      else if(obj.x !== 0 && prevColR == "#ff9b0b"){
+        prevColR = "#353535";
+        return "#353535";
       }
   }
 

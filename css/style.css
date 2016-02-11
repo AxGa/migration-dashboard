@@ -107,7 +107,7 @@ body,.pure-g [class *="pure-u"] {
 }
 
 .amount{
-  color: #1BBECF;
+  color: #ff9b0b;
   font-family: "robotobold", Arial;
 }
 
@@ -179,7 +179,7 @@ body,.pure-g [class *="pure-u"] {
 .pure-g{
   margin: 20px 0 20px 0;
   padding-bottom: 15px;
-  border-top: 36px #363636 solid;
+  border-top: 36px #ed1944 solid;
 }
 
 .header h1{
@@ -193,7 +193,7 @@ body,.pure-g [class *="pure-u"] {
   font-family: zona_probold;
   position: relative;
   top: -37px;
-  color: #1BBECF;
+  color: #fff;
   margin-bottom: 0;
   margin-top: 0;
 }
@@ -238,7 +238,7 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
 .axis.y.demographics .tick text{text-anchor:middle!important;}
 
 .area{
-  fill: #1BBECF;
+  fill: #ff9b0b;
 }
 
 .deathNum{
@@ -254,7 +254,7 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
 
 .chart_title{
   font-family: "zona_probold";
-  color: #1BBECF;
+  color: #ff9b0b;
   padding: 3px;
   font-size: 14px;
 }
@@ -271,11 +271,12 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
   font-family: "zona_probold";
   padding: 3px;
   font-size: 14px;
+  color: #767676;
 }
 
 .arr2016{
   font-size: 72px;
-  color: #1BBECF;
+  color: #ff9b0b;
 }
 
 .arr2015{
@@ -284,7 +285,7 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
 }
 
 .left{
-  fill:#1BBECF;
+  fill:#ff9b0b;
 }
 
 .right{
