@@ -3,35 +3,13 @@ body,.pure-g [class *="pure-u"] {
   max-width: 1170px;
 }
 
-.header span{
-  display:inline;
-  font-size:2em;
-  font-weight:bold;
+.pure-g:nth-child(1){
+  background-color: #2C4043;
+  margin-bottom: 5px;
 }
 
-.header span:nth-of-type(1){
-  color:#EC1B46;
-}
-
-.header span:nth-of-type(2){
-  color:#2C4043;
-}
-
-.swathe{
-  background-color:#EC1B46;
-  margin-top:1em;
-  /*height:75px;*/
-  width:100%;
-}
-
-.swathe div{
-  box-sizing:border-box;
-  padding:10px 20px;
-  display:inline-block;
-  min-width:calc(10% - 10px);
-  max-width:calc(17% - 10px);
-  font-size:1.5em;
-  color:#fff;
+.pure-g:nth-child(2){
+  margin-top: 0;
 }
 
 #placeholder{
@@ -187,6 +165,16 @@ body,.pure-g [class *="pure-u"] {
 
 .l-box.counter{
   border-right: 1px solid #757575;
+  color: #fff;
+}
+
+.l-box.counter a{
+  color: #fff;
+}
+
+.l-box.counter text{
+  fill: #ededed;
+  text-shadow: none;
 }
 
 .l-box{background-color:none;margin:2px;border:2px solid transparent;box-sizing:border-box;border-radius:0px;}
@@ -212,7 +200,7 @@ body,.pure-g [class *="pure-u"] {
 .pure-g:nth-child(even) > div:nth-child(1) .l-box{background-color:#fcb615;}*/
 path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges;}
 .axis text{font-size:12px;}
-.axis.x .tick line{stroke:#dadada;}
+.axis.x .tick line{stroke:#dadada;opacity: 0;}
 .axis.y.demographics .tick line{stroke:none;}
 .axis.y path.domain{stroke:none;}
 
@@ -237,7 +225,11 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
     -webkit-animation-iteration-count: infinite;
 }
 
-.axis.x.deaths .tick text{text-anchor:middle!important;}
+.axis.x.deaths .tick text{
+  text-anchor:middle!important;
+  text-shadow: none;
+  fill: #ededed;
+}
 .axis.y.demographics .tick text{text-anchor:middle!important;}
 
 .area{
@@ -246,7 +238,8 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
 
 .deathNum{
   font-family: "robotobold", Arial;
-
+  text-shadow: none;
+  fill: #ededed;
 }
 
 .circ{
@@ -264,7 +257,7 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
 
 .titleLast{
   font-family: "zona_probold";
-  color: #767676;
+  color: #ededed;
   padding: 3px;
   font-size: 14px;
   margin-top: 20px;
@@ -287,7 +280,7 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
 
 .arr2015{
   font-size: 53px;
-  color: #767676;
+  color: #ededed;
 }
 
 .num{
