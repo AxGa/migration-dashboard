@@ -30,6 +30,7 @@ body {
   width: 60%;
   margin: auto;
   text-align: center;
+  color: #767676;
 }
 
 .labels{
@@ -71,7 +72,7 @@ body {
   background-color: rgba(255, 255, 255, 0);
   border: 1px solid;
   border-color: rgba(255, 255, 255, 0);
-  width: 20%;
+  width: 28%;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
@@ -124,6 +125,7 @@ table.data-table {
   top: 0px;
   padding: 10px;
   max-width: 230px;
+  font-size: 14px;
 }
 
 .notes{
@@ -210,11 +212,19 @@ table.data-table {
   .cou-val{
     font-size: 12px;
   }
+  .sank_tooltip{
+    width: 35%;
+  }
 }
 
 @media (max-width: 460px) {
+  #chart{
+    width: 100%;
+  }
+
   .labels{
     font-size: 12px;
+    width: 100%;
   }
 
   .labRight{

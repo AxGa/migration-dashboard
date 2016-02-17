@@ -1,4 +1,4 @@
-function callMap(pUrl, fUrl, furlIt, furlEn){
+function callMap(){
 
   var tooltip= CustomTooltip("bubbles_tooltip");
   var svg, meshData, scale, circles, radius1, radius2, countryLabs, labelData, nest,
@@ -15,20 +15,11 @@ function callMap(pUrl, fUrl, furlIt, furlEn){
 $(document).ready(function(){
   var width = $("#map").width();
   var height, mapMarginLeft, mapScale, mapTranslate, mapBackgr;
-  if(pUrl == fUrl || pUrl == furlIt || pUrl == furlEn){
-    height = $("#map").width()*0.70;
-    mapMarginLeft = 15;
-    mapScale = width * 2.76872536;
-    mapTranslate = [(width/-3.16555) - mapMarginLeft, height * 3.60020];
-    mapBackgr = "map_backgr.png";
-  }
-  else {
-    height = $("#map").width()*0.55;
-    width > 460 ? mapMarginLeft = 30 : mapMarginLeft = 10;
-    mapScale = width * 2.352433;//2997;
-    mapTranslate = [(width/-3.55) - mapMarginLeft, height * 3.893249607];//; //[-358.00, 2728.00];
-    mapBackgr = "test_rob.png";
-  }
+  height = $("#map").width()*0.55;
+  width > 460 ? mapMarginLeft = 30 : mapMarginLeft = 10;
+  mapScale = width * 2.352433;//2997;
+  mapTranslate = [(width/-3.55) - mapMarginLeft, height * 3.893249607];//; //[-358.00, 2728.00];
+  mapBackgr = "test_rob.png";
   
 
   var projection = d3.geo.robinson()
@@ -90,7 +81,7 @@ d3.json("http://data.unhcr.org/api/stats/mediterranean/monthly_arrivals_by_locat
   }
   var currentMonth = getMonthFromString(dates[dates.length - 1].split(" ")[0]);
   sliderInit(currentMonth);
-  d3.json("js/data.json", function(error, world) {
+  d3.json("js/topo.json", function(error, world) {
       if (error) return console.error(error);
       mapData = topojson.feature(world, world.objects.countries);
       meshData = topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; });
@@ -128,7 +119,7 @@ function drawMap(circlesData) {
           .attr("xlink:href", mapBackgr)
           .attr("width", width + (width * 0.07849))
           .attr("height", height)
-          .attr("x", function() { return pUrl == fUrl || pUrl == furlIt || pUrl == furlEn ? -mapMarginLeft -5 : -mapMarginLeft;} );
+          .attr("x", function() { return -mapMarginLeft;} );
 
       svg.append("path")
         .datum(meshData)
@@ -173,7 +164,7 @@ function drawMap(circlesData) {
           .data(labelData)
         .enter()
         .append("text")
-            .attr("x", function(d){return path.centroid(d)[0];})
+            .attr("x", function(d){return d.properties.name == "Turkey" ? path.centroid(d)[0] - (width*13/100) : path.centroid(d)[0];})
             .attr("y", function(d){ return d.properties.name == "Croatia" ? path.centroid(d)[1] - 15 : path.centroid(d)[1] ;})
             .attr("dy", "0.3em")
             .attr("text-anchor", "middle")
@@ -186,10 +177,47 @@ function drawMap(circlesData) {
             })
             .call(wrap, 90);
 
-          d3.select(".flows.intro").style({
-            "min-height": d3.select(".chart.flows.full").style("height")
-          })
-        
+        d3.select("#mapSvg").append("text")
+          .attr("x", width*28/100)
+          .attr("y", height*90/100)
+          .attr("class", "sea")
+          .text("Mediterranean sea");
+
+          //LEGEND
+          var rad = radius1(Math.round(d3.max(data, function(d){return d.value})));
+
+          var legend = svg.append("g").attr("class", "legend").attr("transform", "translate(" + (width - radius1(d3.max(data, function(d){return d.value})) - (width*5/100)) + "," + (radius1(d3.max(data, function(d){return d.value})) + 10) + ")");
+          legend.append("rect")
+            .attr("transform", "translate(" + (- (rad+10)) + "," + (- (rad+10)) + ")")
+            .attr("width", (rad*2) + 40)
+            .attr("height", (rad*2) + 20)
+            .style("fill", "#fff")
+            .style("opacity", 0.5);
+
+          var maxx = d3.max(data, function(d){return d.value});
+          legend.append("circle")
+            .attr("class", "leg_circle")
+            .attr("r", radius1(Math.round(d3.max(data, function(d){return d.value}))))
+          legend.append("text").attr("class", "keyTxt").style("text-anchor", "middle").text(formatNumber(Math.round(maxx/10000)*10000)).attr("y", -(rad - 15));
+
+          legend.append("circle")
+            .attr("class", "leg_circle")
+            .attr("cy", (rad - radius1(Math.round(d3.max(data, function(d){return d.value}))/4)))
+            .attr("r", radius1(Math.round(d3.max(data, function(d){return d.value}))/4))
+          legend.append("text").attr("class", "keyTxt").style("text-anchor", "middle").text(formatNumber(Math.round((maxx/4)/10000)*10000)).attr("y", (rad - (radius1(Math.round(d3.max(data, function(d){return d.value}))/4)*2)) - 3);
+
+
+         legend.append("circle")
+            .attr("class", "leg_circle")
+            .attr("cy", (rad - radius1(Math.round(d3.max(data, function(d){return d.value}))/2)))
+            .attr("r", radius1(Math.round(d3.max(data, function(d){return d.value}))/2))
+          legend.append("text").attr("class", "keyTxt").style("text-anchor", "middle").text(formatNumber(Math.round((maxx/2)/10000)*10000)).attr("y", (rad - (radius1(Math.round(d3.max(data, function(d){return d.value}))/2)*2))-3);
+
+          legend.append("circle")
+            .attr("class", "leg_circle")
+            .attr("cy", (rad - radius1(Math.round(d3.max(data, function(d){return d.value}))/16)))
+            .attr("r", radius1(Math.round(d3.max(data, function(d){return d.value}))/16))
+          legend.append("text").attr("class", "keyTxt").style("text-anchor", "middle").text(formatNumber(Math.round((maxx/16)/10000)*10000)).attr("y", (rad - (radius1(Math.round(d3.max(data, function(d){return d.value}))/16)*2))-3);
       }
 
       function show_details(data, i, element) {

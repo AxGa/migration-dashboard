@@ -43,9 +43,6 @@ body,.pure-g [class *="pure-u"] {
   float: left;
 }
 
-.pure-u-xl-6-24{
-  width: 25.7%;
-}
 
 .axisY{
   position: absolute;
@@ -129,6 +126,7 @@ body,.pure-g [class *="pure-u"] {
     float: right;
     color: #353535;
     padding-right: 3px;
+    font-family: "zona_probold";
 }
 
 .percDiv{
@@ -186,7 +184,12 @@ body,.pure-g [class *="pure-u"] {
 -webkit-animation: text-pulse 1.5s ease-out;
 -webkit-animation-iteration-count: infinite;
 }
-.l-box{min-height:300px;background-color:none;margin:2px;border:2px solid transparent;box-sizing:border-box;border-radius:0px;}
+
+.l-box.counter{
+  border-right: 1px solid #757575;
+}
+
+.l-box{background-color:none;margin:2px;border:2px solid transparent;box-sizing:border-box;border-radius:0px;}
 .l-box h3{    
   font-size: 1.8em;
   padding: 0px 10px;
@@ -277,11 +280,22 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
 .arr2016{
   font-size: 72px;
   color: #ff9b0b;
+  border-bottom: 1px solid #757575;
+  padding-bottom: 20px;
+  margin-right: 5px;
 }
 
 .arr2015{
   font-size: 53px;
   color: #767676;
+}
+
+.num{
+  font-family: "zona_probold";
+}
+
+.numFem{
+  font-family: "zona_probold";
 }
 
 .left{
@@ -316,6 +330,14 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
   margin-top: 43px;
 }
 
+.data-source{
+  font-size: 11px !important;
+}
+
+.note{
+  font-size: 11px !important;
+}
+
 @media (max-width: 768px){
   .swathe div{
     box-sizing:border-box;
@@ -326,6 +348,13 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
     /*max-width:calc(15% - 10px);*/
     font-size:1.5em;
     color:#fff;
+  }
+
+  .l-box.counter.chart{
+    text-align: center;
+    border-bottom: 1px solid #757575;
+    padding-bottom: 20px;
+    border-right: 0;
   }
 }
 
@@ -370,4 +399,5 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
     float: left;
     border-left: 1px solid #333;
   }
+
 }

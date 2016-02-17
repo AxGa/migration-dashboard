@@ -2,7 +2,7 @@
 <html lang="en-GB">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="fonts/stylesheet.css" type="text/css" charset="utf-8" />
     <link rel="stylesheet" href="css/pure-min.css">
     <link rel="stylesheet" href="css/grids-responsive-min.css">
@@ -22,7 +22,7 @@
 <script src="js/jquery.tablesorter.min.js"></script>
 <script src="js/tabletop.js"></script>
 <script src="js/sankey.js"></script>
-<script src="js/ractive.js"></script>
+<script src="js/ractive.min.js"></script>
 <script src="js/xlsx.core.min.js"></script>
 <script src="js/iframeMessenger.js"></script>
 <script src="js/jquery.nouislider.all.min.js" type="text/javascript"></script>
@@ -92,10 +92,10 @@ function initDashboard(data){
         class: function(d,i){
             //console.log(d)
             if( d.type == "intro"){
-              return 'pure-u-1 pure-u-sm-1-2 pure-u-md-1-2 pure-u-lg-1-5 pure-u-xl-1-5'
+              return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-1-5 pure-u-xl-1-5'
             }
             else if(d.theme == "counter" & d.type == "chart"){
-              return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-6-24 pure-u-xl-6-24'
+              return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-3 pure-u-lg-6-24 pure-u-xl-6-24'
             }
             else if(d.theme == "demographics" & d.type == "chart" ||d.theme == "daily arrivals" & d.type == "chart"){
               return 'pure-u-1 pure-u-sm-1-1 pure-u-md-1-1 pure-u-lg-2-5 pure-u-xl-2-5'
@@ -109,10 +109,6 @@ function initDashboard(data){
             }
         }
     });
-    var parentUrl = document.referrer;
-    var frontUrl = "http://openmigration.org/";
-    var frontUrlIt = "http://openmigration.org/it/";
-    var frontUrlEn = "http://openmigration.org/en/";
 
     var inners = cards.append('div').attr({class:function(d,i){return i == 0 ? ('l-box full ' + d.type + ' ' + d.theme.replace(/ /g,"")):('l-box ' + d.type + ' ' + d.theme.replace(/ /g,""))}});
 
@@ -120,10 +116,11 @@ function initDashboard(data){
 
     var intros = inners.filter(function(d){return d.type == "intro"}).append("p").html(function(d){return d.content});
 
-    if(parentUrl == frontUrl || parentUrl == frontUrlIt || parentUrl == frontUrlEn){
-      $( ".dailyarrivals.intro" ).parent().css("opacity", 0);
-    }
-    else { $( ".dailyarrivals.intro" ).parent().css("opacity", 1); }
+    var sourc = inners.filter(function(d){return d.type == "intro"}).append("p").attr("class", "data-source").html("Source: ").append("a").attr("href", function(d){return d.link}).html(function(d){return d.source;});
+
+    var notes = inners.filter(function(d){return d.type == "intro" && d.note !==""}).append("p").attr("class", "note").html(function(d){return d.note});
+
+    var notes2 = inners.filter(function(d){return d.type == "intro" && d.note !==""}).append("p").attr("class", "note").html(function(d){return d.note2});
     
     
     // console.log(d3.select('.l-box').node().getBoundingClientRect());
@@ -155,7 +152,7 @@ function initDashboard(data){
         //d3.select("#svgCont").style("overflow-x", "visible");
         // clientWidth = document.getElementById('placeholder').clientWidth;
         width = d3.select('.l-box.chart.dailyarrivals').node().getBoundingClientRect().width-(margin.left+margin.right+4);
-        parentUrl == frontUrl || parentUrl == frontUrlIt || parentUrl == frontUrlEn ? height = 97 : height = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().height-margin.bottom;
+        height = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().height-margin.bottom;
         x.range([0, width]);
         xMonth.range([0, width]);
         drawChart(dt.greece, "greece");
@@ -238,8 +235,7 @@ function initDashboard(data){
       }
       max = d3.max(d3.entries(dataset), function(d){return d3.max(d3.entries(d.value), function(e){return typeof(e.value) == "number" ? e.value : 0;})});
       sizeChange();
-      checkUrl();
-      callMap(parentUrl, frontUrl, frontUrlIt, frontUrlEn);
+      callMap();
       initSankey();
       initRankings();
       initCounter();
@@ -274,7 +270,7 @@ function initDashboard(data){
           .scale(y)
           .orient("left")
           .tickFormat(function(d) { return si(d).replace(/G/, 'bn'); });
-      parentUrl == frontUrl || parentUrl == frontUrlIt || parentUrl == frontUrlEn ? yAxis.ticks(5) : yAxis.ticks(10);
+      yAxis.ticks(10);
       var todayMonth = today.getMonth();
       var todayDay = today.getDate();
       var todayIndx;
@@ -303,13 +299,7 @@ function initDashboard(data){
       amountDiv.append("div").attr("class", "amLab").html("Arrivals");
       var amount = amountDiv.append("div").attr("class", "amount");
       var countryLab = infoBox.append("div").attr("class", "countryLab").html(cntry.ucfirst());
-    /*  var percDiv = infoBox.append("div").attr("class", "percDiv");
-      percDiv.append("div").attr("class", "percLab").html("Percentage of total aid so far");
-      var perc = percDiv.append("div").attr("class", "perc");
-      
-      var outerBar = percDiv.append("div").attr("class", "outerBar");
-      var fillBar = outerBar.append("div").attr("class", "fillBar");
-      var outOf = percDiv.append("div").attr("class", "outOf");*/
+
       infoBox.append("div").attr("class", "clear");
 
       var axisY = d3.select("#svg_" + cntry).append("div").attr("class", "axisY");
@@ -341,7 +331,7 @@ function initDashboard(data){
           .call(xAxisMonth)
         .selectAll(".tick text")
           .attr("y", 20)
-          .attr("x", 70 / 2)
+          .attr("x", ($(".month.axis > .domain")[0].getBoundingClientRect().width/d3.select(".month.axis").selectAll(".tick")[0].length)/2)
           .style("fill", "#999")
           .style("text-anchor", "middle");
 
@@ -362,7 +352,6 @@ function initDashboard(data){
           .attr("class", "bar")
           .style("fill", "#ff9b0b")
           .attr("x", function(d) { return x(d.date); })
-          // .attr("width", function(){ if(vpwidth > 950){return 3;} else return 6; })
           .attr("width",width/120)
           .attr("y", function(d) { return isNaN(d.value) ? y(0) : y(d.value); })
           .attr("height", function(d) { return isNaN(d.value) ? height-y(0) : height - y(d.value); });
@@ -383,6 +372,7 @@ function initDashboard(data){
           .on("mouseover", function() { focus.style("display", null);})
           .on("mouseout", function() { d3.selectAll(".focus").style("display", "none");})
           .on("mousemove", mousemove)
+          .on("touchmove", mousemove)
           .on("click", mousemove);
 
 
@@ -410,28 +400,6 @@ function initDashboard(data){
           allDateDivs.html((all[z][i].__data__.date).getDate() + " " + ( width < 275 ? monthsShort[(all[z][i].__data__.date).getMonth()]:monthsArr[(all[z][i].__data__.date).getMonth()] ) + " " + (all[z][i].__data__.date).getFullYear());
           allAmmounts.html(isNaN(all[z][i].__data__.value) ? "N/A" : format(all[z][i].__data__.value));
         }
-      }
-    }
-
-    //CHECK URL TO HIDE AND SHOW RELEVANT PARTS OF DASHBOARD
-    function checkUrl(){
-      if(parentUrl == frontUrl || parentUrl == frontUrlIt || parentUrl == frontUrlEn){
-
-        $( ".pure-g:nth-child(2)" ).insertBefore(".pure-g:nth-child(1)");
-        $( ".pure-u-xl-3-4" ).css('width', '100%');
-        $( ".flows.intro" ).parent().css('display', 'none');
-        $( ".pure-u-xl-3-4" ).parent().css('width', '66.6667%').css('float', 'left');
-        $( ".dailyarrivals.intro" ).parent().css("position", "absolute").css("left", -9999);
-        $( "#svg_fyrom" ).parent().css('display', 'none');
-        $( "#svg_serbia" ).parent().css('display', 'none');
-        $( "#svg_croatia" ).parent().css('display', 'none');
-        $( "#svg_slovenia" ).parent().css('display', 'none');
-        $( "#svg_germany" ).parent().css('display', 'none');
-        $( "#svg_greece" ).parent().css('width', '100%');
-        $( "#svg_hungary" ).parent().css('width', '100%');
-        $( "#svg_austria" ).parent().css('width', '100%');
-        $( ".l-box.dailyarrivals" ).css('min-height', '220px')
-        $( "#svg_austria" ).parent().insertBefore( "#svg_hungary" ).parent();
       }
     }
 
@@ -465,13 +433,13 @@ function initDashboard(data){
       }
 
       function drawArea(data){
-        var margin = {top: 20, right: 30, bottom: 20, left: 50},
+        var margin = {top: 20, right: 10, bottom: 20, left: 50},
             width = $(".l-box.counter:not(.full)").width() - margin.left - margin.right,
-            height = 270 - margin.top - margin.bottom;
+            height = 230 - margin.top - margin.bottom;
 
         var x = d3.scale.ordinal()
             .domain(data.map(function(d) { return d.year; }))
-            .rangeRoundPoints([0, width]);
+            .rangeRoundBands([0, width], .2);
 
         var y = d3.scale.linear()
             .domain([0, d3.max(data, function(d) { return d.value; })])
@@ -485,11 +453,6 @@ function initDashboard(data){
             .scale(y)
             .orient("left");
 
-        var area = d3.svg.area()
-            .x(function(d) { return x(d.year); })
-            .y0(height)
-            .y1(function(d) { return y(d.value); });
-
         d3.select(".l-box.counter:not(.full)").append("div").attr("class", "titleLast").html("Dead/missing").style("margin-top", "0");
 
         var svg = d3.select(".l-box.counter:not(.full)").classed("full", true)
@@ -499,25 +462,23 @@ function initDashboard(data){
           .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        svg.append("path")
-            .datum(data)
-            .attr("class", "area")
-            .attr("d", area);
+        svg.selectAll("bar")
+          .data(data)
+        .enter().append("rect")
+          .attr("class", "deaths_bar")
+          .style("fill", "#ff9b0b")
+          .attr("x", function(d) { return x(d.year); })
+          .attr("width",width/10)
+          .attr("y", function(d) { return isNaN(d.value) ? y(0) : y(d.value); })
+          .attr("height", function(d) { return isNaN(d.value) ? height-y(0) : height - y(d.value); });
 
-        svg.selectAll("circles")
-            .data(data)
-          .enter().append("circle")
-            .attr("class", "circ")
-            .attr("r", 5)
-            .attr("cx", function(d){ return x(d.year); })
-            .attr("cy", function(d){ return y(d.value); });
 
         svg.selectAll("texts")
             .data(data)
           .enter().append("text")
             .attr("class", "deathNum")
             .text(function(d){ return d.value; })
-            .attr("x", function(d){ return x(d.year) + 6; })
+            .attr("x", function(d){ return x(d.year); })
             .attr("y", function(d){ return y(d.value) - 6; });
 
         svg.append("g")
@@ -552,7 +513,7 @@ function initDashboard(data){
           console.log("Resized charts")
           sizeChange();
           console.log("Resized map")
-          sizeChangeMap();
+          //sizeChangeMap();
         });
 }
 

@@ -15,17 +15,15 @@ function initSankey(){
   tip.append("div").attr("class", "tooltip-value");
   tip.append("table").attr("class", "data-table");
   var linkTip = chrt.append("div").attr("class", "linkTip");
-  placeholder.append("div").attr("class", "title_box").html("Asylum applications in Europe 2014");
+  placeholder.append("div").attr("class", "title_box").html("Asylum applications in Europe 2015");
   placeholder.append("div").attr("class", "applicants_table");
-  placeholder.append("div").attr("class", "notes")
-    .append("div").attr("class", "data-source").html("<strong>Source:</source> <a href='http://ec.europa.eu/eurostat/web/asylum-and-managed-migration/data/database' target='_blank'>Eurostat</a>")
   var units = "persons";
   var continents = ["World", "Africa", "Asia", "Europe", "North & Central America", "Oceania", "S. America & Caribbean"];
   var coloredCountries = ["Syria", "Afghanistan", "Iraq", "Kosovo", "Albania", "Eritrea", "Pakistan", "Germany", "Hungary", "Sweden", "Italy", "Austria", "France", "Belgium"];
   var colors = ["#ef1941", "#feb800", "#2b4043", "#21c0d3", "#ff4800", "#00b7af", "#0626a", "#008b9e", "#f34500", "#00b3ac", "#21c0d3", "#00626a", "#ef1941", "#feb800"];
   var dataset;
   var vpwidth = $("#chart").width();
-  var margin = {top: 10, right: 10, bottom: 10, left: 10},
+  var margin = {top: 10, right: 0, bottom: 10, left: 0},
       width = vpwidth - margin.left - margin.right,
       height = 800 - margin.top - margin.bottom;
 
@@ -38,8 +36,8 @@ function initSankey(){
   var tableTemplate;
 
   //------RESIZE
-  d3.select(window)
-        .on("resize", sizeChange);
+/*  d3.select(window)
+        .on("resize", sizeChange);*/
 
   function sizeChange(){
     //d3.selectAll(".clear").remove();
@@ -102,7 +100,6 @@ function initSankey(){
 
   
   function drawSankey(nodes, links){
-    function isOdd(num) { return num % 2;}
     d3.select("#chart").selectAll("g").remove();
     d3.select("#chart").selectAll("path").remove();
     sankey = d3.sankey()
@@ -213,12 +210,20 @@ function initSankey(){
     var plchldrWidth = $(".l-box.asylumseekers.chart").width();
     var tipPos = getTopLeft(thiz.type_id, "tooltip", d3.event);
     var marLeft = parseInt($("#chart").css('margin-left'));
+    var chartWidth = $("#chart").width();
 
-    if(eX == 0){
+    if(eX == 0 && width > 525){
       eX = 0 - marLeft;
-    }else{
+    }
+    else if(eX == 0 && width <= 525){
+      eX = 25;
+    }
+    else if(eX !== 0 && width < 525){
+      eX = width - $(".sank_tooltip").width() - 45;
+    }
+    else{
       var tipWidth = $(".sank_tooltip").width();//(d3.select(".sank_tooltip").style("width")).replace(/\px/g, '');
-      eX= plchldrWidth - tipWidth - marLeft - (plchldrWidth*10/100);      
+      eX= chartWidth;//plchldrWidth - tipWidth - marLeft - (plchldrWidth*10/100);      
     }
 
     var heightSum = tipPos.top + $(".sank_tooltip").height();
@@ -354,6 +359,9 @@ function initSankey(){
     for (var i = 0; i < data.length; i++){
       data[i].appls_per_milllion = Math.round((1000000*data[i].applicants)/data[i].population);
       data[i].positive_rate = ((data[i].positive*100)/data[i].decisions_total).toFixed(1);
+      if(data[i].positive_rate == "NaN"){
+        data[i].positive_rate = 0;
+      }
     }
 
     var applsMax = d3.max(data, function(d){ return d.applicants;});

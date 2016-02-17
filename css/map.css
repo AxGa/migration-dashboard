@@ -51,7 +51,7 @@ image{
 
 .label{
   font-size: 14px;
-  fill: #bbbbbb;
+  fill: #999;
   font-family: "zona_probold";
 }
 
@@ -183,6 +183,25 @@ svg stroke{
   box-shadow: none;
 }
 
+.legend{
+
+}
+
+.leg_circle{
+  fill: none;
+  stroke: #ff9b0b;
+  stroke-width: 1.5;
+  stroke-dasharray: 2;
+}
+
+.sea{
+  fill: #4bc6df;
+}
+
+.keyTxt{
+
+}
+
 @media (min-width: 950px) {
 
 }
@@ -225,6 +244,10 @@ svg stroke{
 
   .label{
     font-size: 10px;
+  }
+
+  .keyTxt{
+    font-size: 7px;
   }
 
 }

@@ -97,8 +97,17 @@ a, a:visited, a:focus {
 }
 
 @media (max-width: 610px) {
-  .end-title {
-    opacity: 0;
+  .valueLab {
+    text-shadow: 0px 0px 10px #fff;
+  }
+
+  .highlight .pill-outline{
+    stroke-width:1;
+  }
+
+  .highlight {
+    stroke: black;
+    stroke-width:1;
   }
 
 }
