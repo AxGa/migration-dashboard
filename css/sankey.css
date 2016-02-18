@@ -1,12 +1,3 @@
-body {
-  font-family: "zona_prothin", Arial, serif;
-  height: 1224;
-}
-
-.placeholder{
-  
-}
-
 .title_box{
   font-family: "zona_probold";
   padding: 3px;
@@ -255,6 +246,14 @@ table.data-table {
   .linkTip{
     font-size: 13px;
     max-width: 255px;
+  }
+
+  .column{
+    font-size: 10px;
+  }
+
+  .tab_header{
+    font-size: 10px !important;
   }
 
 }

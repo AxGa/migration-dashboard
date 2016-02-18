@@ -80,7 +80,7 @@ body,.pure-g [class *="pure-u"] {
   background-color: #ededed;
   padding: 5px 0 5px 5px;
   border-radius: 2px;
-  width: calc(100% - 35px);
+  width: calc(100% - 2%);
   margin-top: 10px;
   margin-bottom: 5px;
   height: 38px;

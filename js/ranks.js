@@ -14,7 +14,7 @@ $(document).ready(function() {
   
   var placeholder = d3.select(".l-box.origins:not(.full)");
       placeholder.append("div").attr("id", "vis");
-      vpwidth = $(window).width();
+      vpwidth = $("#vis").width();
     
     var margin = {top: 5, right: 70, bottom: 20, left: 100};
 
