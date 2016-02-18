@@ -103,7 +103,7 @@ function initDashboard(data){
 
     var notes = inners.filter(function(d){return d.type == "intro" && d.note !==""}).append("p").attr("class", "note").html(function(d){return d.note});
 
-    var notes2 = inners.filter(function(d){return d.type == "intro" && d.note !==""}).append("p").attr("class", "note").html(function(d){return d.note2});
+    var notes2 = inners.filter(function(d){return d.type == "intro" && d.note2 !==""}).append("p").attr("class", "note").html(function(d){return d.note2});
     
     
     // console.log(d3.select('.l-box').node().getBoundingClientRect());

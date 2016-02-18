@@ -15,8 +15,9 @@ $(document).ready(function() {
   var placeholder = d3.select(".l-box.origins:not(.full)");
       placeholder.append("div").attr("id", "vis");
       vpwidth = $("#vis").width();
-    
-    var margin = {top: 5, right: 70, bottom: 20, left: 100};
+    var width = $(".l-box.chart.origins").width();
+    var margin;
+    width > 800 ? margin = {top: 25, right: 70, bottom: 20, left: 100} : margin = {top: 25, right: 52, bottom: 20, left: 78};
 
     var pillTypes = [
       {func:oneColor, opts: {colors:["#ff9b0b"]}, id:"mea", name:"Middle East"},
@@ -44,7 +45,7 @@ $(document).ready(function() {
       {func:oneColor, opts: {colors:["#4bc6df"]}, id:"BIH", name:"BiH"},
       {func:oneColor, opts: {colors:["#4bc6df"]}, id:"MKD", name:"FYR of Macedonia"},
       {func:oneColor, opts: {colors:["#ff9b0b"]}, id:"GEO", name:"Georgia"},
-      {func:oneColor, opts: {colors:["#4bc6df"]}, id:"FSM", name:"Former Serbia"},
+      {func:oneColor, opts: {colors:["#4bc6df"]}, id:"FSM", name:"Serbia & Mont."},
       {func:oneColor, opts: {colors:["#ff9b0b"]}, id:"TUR", name:"Turkey"},
       {func:oneColor, opts: {colors:["#F06F2D"]}, id:"LKA", name:"Sri Lanka"},
       {func:oneColor, opts: {colors:["#4bc6df"]}, id:"ROU", name:"Romania"},
@@ -75,7 +76,6 @@ $(document).ready(function() {
     var pillSpace = 10;
     var data = [];
     var aspect = 0;
-    var width = $(".l-box.chart.origins").width();
     var svg = null;
     var g = null;
     var defs = null;
@@ -189,7 +189,9 @@ $(document).ready(function() {
     })
 
     function drawBump(rawData){
-
+      var mobile;
+      $(".l-box.chart.origins").width() < 800 ? mobile = true : mobile = false;
+      mobile ? d3.select(".l-box.intro.origins").select(".note").html("Numbers on mouse over are asylum seekers, thousands") : "";
       width = vpwidth;
       data = prepareData(rawData);
       var links = createLinks(data);
@@ -223,9 +225,10 @@ $(document).ready(function() {
         .attr("text-anchor", "end")
         .attr("x", 0)
         .attr("dx", -5)
-        .attr("dy", pillHeight - 4)
+        .attr("dy", pillHeight - 6)
         .attr("y", function(d,i) { return (pillHeight + pillSpace) * i; })
-        .text(function(d) { return d.name; });
+        .text(function(d) { return d.name; })
+        .style("font-size", function(d){ return width < 600 && (d.name == "Afghanistan" || d.name == "Bangladesh" || d.name == "Serbia & Mont." || d.name == "Sierra Leone") ? "10px" : "12px";});
 
       var defpills = defs.selectAll("pill")
         .data(pillTypes)
@@ -258,7 +261,7 @@ $(document).ready(function() {
         .attr("class", "title year-title")
         .attr("text-anchor", "middle")
         .attr("x", pillWidth / 2)
-        .attr("dy", -15)
+        .attr("dy", -8)
         .text(function(d) { return d; });
 
       var use = year.selectAll("pill-use")
@@ -288,7 +291,7 @@ $(document).ready(function() {
         .append("text")
         .attr("text-anchor", "middle")
         .attr("fill", function(d){ return d.id === "ERI" || d.id === "NGA" || d.id === "SOM" || d.id === "SLE" || d.id === "GMB" || d.id === "DZA" || d.id === "COD" || d.id === "ZWE" ? "#fff" : "#333"; })
-        .text(function(d){ return formatNumber(d.tot);})
+        .text(function(d){ return width > 600 ? formatNumber(d.tot) : formatNumber(Math.round(d.tot*100)/100000);})
         .attr("class", "valueLab")
         .attr("transform", function(d,i) {
           var c = (d.value - 1) * (pillHeight + pillSpace) + 15;
@@ -307,12 +310,11 @@ $(document).ready(function() {
         })
         .attr("text-anchor", function(d) { return d.pos > sideEnds[d.year] ? "left" : "middle"; })
         .attr("dx", function(d) { return d.pos > sideEnds[d.year] ? pillWidth + 5 : pillWidth / 2;})
-        .attr("dy", -1 * (pillHeight - 1))
-        .text(function(d) { return d.name; });
+        .attr("dy", -1 * (pillHeight - 4))
+        .text(function(d) { return d.name; })
+        .style("font-size", function(d){ return (d.name == "Afghanistan" || d.name == "Bangladesh") && width < 600 ? "10px" : "12px";});
 
       //KEY
-      var mobile;
-      $(".l-box.chart.origins").width() < 800 ? mobile = true : mobile = false;
       var key = d3.select(".l-box.intro.origins")
         .append("svg")
         .attr("height", function(){ return mobile ? 50 : 150 })

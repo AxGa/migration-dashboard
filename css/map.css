@@ -188,14 +188,13 @@ svg stroke{
 }
 
 .legendTitle{
-  font-family: "zona_probold"
+  font-family: "zona_prothin"
 }
 
 .leg_circle{
   fill: none;
   stroke: #ff9b0b;
-  stroke-width: 1.5;
-  stroke-dasharray: 2;
+  stroke-width: 1;
 }
 
 .sea{
@@ -212,6 +211,10 @@ svg stroke{
 }
 
 @media (max-width: 460px) {
+  .legend{
+    display: none;
+  }
+
   .txt{
     font-size: 11px;
   }
@@ -253,6 +256,26 @@ svg stroke{
 
   .keyTxt{
     font-size: 7px;
+  }
+
+  .labels text{
+    opacity: 0;
+  }
+
+  #Italy{
+    opacity: 1 !important;
+  }
+
+  #Greece{
+    opacity: 1 !important;
+  }
+
+  #Turkey{
+    opacity: 1 !important;
+  }
+
+  .sea{
+    font-size: 10px;
   }
 
 }

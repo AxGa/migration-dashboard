@@ -94,7 +94,7 @@ a, a:visited, a:focus {
 
 @media (max-width: 610px) {
   .valueLab {
-    text-shadow: 0px 0px 10px #fff;
+    font-size: 12px;
   }
 
   .highlight .pill-outline{

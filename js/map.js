@@ -164,6 +164,7 @@ function drawMap(circlesData) {
           .data(labelData)
         .enter()
         .append("text")
+            .attr("id", function(d){ return d.properties.name;})
             .attr("x", function(d){return d.properties.name == "Turkey" ? path.centroid(d)[0] - (width*13/100) : path.centroid(d)[0];})
             .attr("y", function(d){ return d.properties.name == "Croatia" ? path.centroid(d)[1] - 15 : path.centroid(d)[1] ;})
             .attr("dy", "0.3em")
@@ -222,7 +223,7 @@ function drawMap(circlesData) {
           legend.append("text")
             .attr("class", "legendTitle")
             .style("text-anchor", "middle")
-            .text("Arrivals in thousands")
+            .text("Arrivals, thousands")
             .attr("y", rad + 16);
       }
 

@@ -27,10 +27,10 @@ function initDemographics(){
             width = $(".l-box.demographics:not(.full)").width() - margin.left - margin.right,
             height = 305 - margin.top - margin.bottom;
 
-        container.append("div").attr("class", "titleYel").html(function(){ return typeOfCountry == "origin" ? "Asylum seekers demographics 2015" : "Host country demographics 2014";}).style("margin-top", "0");
+        container.append("div").attr("class", "titleYel").html(function(){ return typeOfCountry == "origin" ? "Demographics of asylum seekers in the host country, 2015" : "Host country demographics 2014";}).style("margin-top", "0");
         
        	//------------ COUNTRIES LIST SELECTION --------------//
-        if(typeOfCountry == "origin"){
+        if(typeOfCountry == "host"){
             container.append("select").attr("id", "country").attr("class", "select-ctrl").attr("name", "country");
             populateCountries("country");
             var e = document.getElementById("country");
