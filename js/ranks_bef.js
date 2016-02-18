@@ -1,5 +1,4 @@
 function initRankings(){
-$(document).ready(function() {
   var years;
   var vpwidth, dat;
   var formatNumber = d3.format(",.0f");
@@ -12,11 +11,10 @@ $(document).ready(function() {
     "2000":400
   };
   
-  var placeholder = d3.select(".l-box.origins:not(.full)");
-      placeholder.append("div").attr("id", "vis");
-      vpwidth = $(window).width();
+
+  var chart = function() {
     
-    var margin = {top: 5, right: 70, bottom: 20, left: 100};
+    var margin = {top: 80, right: 70, bottom: 20, left: 100};
 
     var pillTypes = [
       {func:oneColor, opts: {colors:["#ff9b0b"]}, id:"mea", name:"Middle East"},
@@ -184,203 +182,204 @@ $(document).ready(function() {
       return causes;
     }
 
-    d3.csv("data/asylum_origins.csv", function(error, data){
-      drawBump(data);
-    })
+    var chart = function(selection) {
 
-    function drawBump(rawData){
+      selection.each(function(rawData) {
+        console.log(rawData);
+        width = vpwidth;
+        data = prepareData(rawData);
+        var links = createLinks(data);
+        var causeTitles = getCauseTitles(data);
+        var startCauses = getStartCauses(data);
 
-      width = vpwidth;
-      data = prepareData(rawData);
-      var links = createLinks(data);
-      var causeTitles = getCauseTitles(data);
-      var startCauses = getStartCauses(data);
+        svg = d3.select(this).selectAll("svg").data([data]);
+        var gEnter = svg.enter().append("svg").append("g");
 
-      svg = d3.select("#vis").selectAll("svg").data([data]);
-      var gEnter = svg.enter().append("svg").append("g");
+        svg.attr("width", width);
+        svg.attr("height", height + margin.top + margin.bottom + 5 );
+        //svg.attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom));
+        svg.attr("preserveAspectRatio", "xMidYMid");
 
-      svg.attr("width", width);
-      svg.attr("height", height + margin.top + margin.bottom + 5 );
-      //svg.attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom));
-      svg.attr("preserveAspectRatio", "xMidYMid");
+        aspect = (width + margin.left + margin.right) / (height + margin.left + margin.right);
 
-      aspect = (width + margin.left + margin.right) / (height + margin.left + margin.right);
+        defs = svg.append("defs");
 
-      defs = svg.append("defs");
+        var pill = defs.append("clipPath")
+          .attr("id", "pill")
+          .append("path")
+          .attr("d", pillPath(pillWidth, pillHeight));
 
-      var pill = defs.append("clipPath")
-        .attr("id", "pill")
-        .append("path")
-        .attr("d", pillPath(pillWidth, pillHeight));
+        g = svg.select("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      g = svg.select("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        g.selectAll(".cause-title")
+          .data(startCauses).enter()
+          .append("text")
+          .attr("class", "title cause-title start-cause")
+          .attr("text-anchor", "end")
+          .attr("x", 0)
+          .attr("dx", -5)
+          .attr("dy", pillHeight - 4)
+          .attr("y", function(d,i) { return (pillHeight + pillSpace) * i; })
+          .text(function(d) { return d.name; });
 
-      g.selectAll(".cause-title")
-        .data(startCauses).enter()
-        .append("text")
-        .attr("class", "title cause-title start-cause")
-        .attr("text-anchor", "end")
-        .attr("x", 0)
-        .attr("dx", -5)
-        .attr("dy", pillHeight - 4)
-        .attr("y", function(d,i) { return (pillHeight + pillSpace) * i; })
-        .text(function(d) { return d.name; });
+        var defpills = defs.selectAll("pill")
+          .data(pillTypes)
+          .enter()
+          .append("g")
+          .attr("id", function(d) { return d.id; })
+          .attr("class", "pill");
 
-      var defpills = defs.selectAll("pill")
-        .data(pillTypes)
-        .enter()
-        .append("g")
-        .attr("id", function(d) { return d.id; })
-        .attr("class", "pill");
+        defpills.append("g").attr("clip-path", "url(#pill)")
+          .each(function(d,i) {
+            d3.select(this).call(d.func, pillWidth, pillHeight, d.opts);
+          });
 
-      defpills.append("g").attr("clip-path", "url(#pill)")
-        .each(function(d,i) {
-          d3.select(this).call(d.func, pillWidth, pillHeight, d.opts);
-        });
+        defpills.append("path")
+          .attr("class", "pill-outline")
+          .attr("d", pillPath(pillWidth, pillHeight));
 
-      g.selectAll("links").data(links)
-        .enter()
-        .append("line")
-        .attr("class", "bump_link")
-        .attr("x1", function(d,i) { return ((pillWidth + yearSpace) * d.gap) - (yearSpace ); })
-        .attr("y1", function(d,i) { return (pillHeight + pillSpace) * (d.start - 1) + (pillHeight / 2); })
-        .attr("x2", function(d,i) { return ((pillWidth + yearSpace) * d.gap); })
-        .attr("y2", function(d,i) { return (pillHeight + pillSpace) * (d.end - 1) + (pillHeight / 2); });
+        g.selectAll("links").data(links)
+          .enter()
+          .append("line")
+          .attr("class", "bump_link")
+          .attr("x1", function(d,i) { return ((pillWidth + yearSpace) * d.gap) - (yearSpace ); })
+          .attr("y1", function(d,i) { return (pillHeight + pillSpace) * (d.start - 1) + (pillHeight / 2); })
+          .attr("x2", function(d,i) { return ((pillWidth + yearSpace) * d.gap); })
+          .attr("y2", function(d,i) { return (pillHeight + pillSpace) * (d.end - 1) + (pillHeight / 2); });
 
-      var year = g.selectAll("year").data(years)
-        .enter()
-        .append("g")
-        .attr("class", "year")
-        .attr("transform", function(d,i) { return "translate(" + ((pillWidth + yearSpace) * i) + ",0)";  });
+        var year = g.selectAll("year").data(years)
+          .enter()
+          .append("g")
+          .attr("class", "year")
+          .attr("transform", function(d,i) { return "translate(" + ((pillWidth + yearSpace) * i) + ",0)";  });
 
-      year.append("text")
-        .attr("class", "title year-title")
-        .attr("text-anchor", "middle")
-        .attr("x", pillWidth / 2)
-        .attr("dy", -15)
-        .text(function(d) { return d; });
+        year.append("text")
+          .attr("class", "title year-title")
+          .attr("text-anchor", "middle")
+          .attr("x", pillWidth / 2)
+          .attr("dy", -15)
+          .text(function(d) { return d; });
 
-      var use = year.selectAll("pill-use")
-        .data(function(y) {
-          return data.map(function(d) {
-            return {"id":d.id, "value":d[y], "tot":d["val"+y]};
-          }).filter(function(d) { return d.value > 0; });
-        })
-        .enter()
-        .append("use")
-        .attr("xlink:href", function(d) { return "#" + d.id;})
-        .attr("class", "pill-use")
-        .attr("transform", function(d,i) {
-          return "translate(0," + (d.value - 1) * (pillHeight + pillSpace) + ")";
-        })
-        .on("mouseover", mouseover)
-        .on("click", mouseover)
-        .on("mouseout", mouseout);
+        var use = year.selectAll("pill-use")
+          .data(function(y) {
+            return data.map(function(d) {
+              return {"id":d.id, "value":d[y], "tot":d["val"+y]};
+            }).filter(function(d) { return d.value > 0; });
+          })
+          .enter()
+          .append("use")
+          .attr("xlink:href", function(d) { return "#" + d.id;})
+          .attr("class", "pill-use")
+          .attr("transform", function(d,i) {
+            return "translate(0," + (d.value - 1) * (pillHeight + pillSpace) + ")";
+          })
+          .on("mouseover", mouseover)
+          .on("mouseout", mouseout);
 
-      year.selectAll("valueLab")
-        .data(function(y) {
-          return data.map(function(d) {
-            return {"id":d.id, "value":d[y], "tot":d["val"+y]};
-          }).filter(function(d) { return d.value > 0; });
-        })
-        .enter()
-        .append("text")
-        .attr("text-anchor", "middle")
-        .attr("fill", function(d){ return d.id === "ERI" || d.id === "NGA" || d.id === "SOM" || d.id === "SLE" || d.id === "GMB" || d.id === "DZA" || d.id === "COD" || d.id === "ZWE" ? "#fff" : "#333"; })
-        .text(function(d){ return formatNumber(d.tot);})
-        .attr("class", "valueLab")
-        .attr("transform", function(d,i) {
-          var c = (d.value - 1) * (pillHeight + pillSpace) + 15;
-          return "translate(" + pillWidth / 2 + "," + c  + ")";
-        });
+        year.selectAll("valueLab")
+          .data(function(y) {
+            return data.map(function(d) {
+              return {"id":d.id, "value":d[y], "tot":d["val"+y]};
+            }).filter(function(d) { return d.value > 0; });
+          })
+          .enter()
+          .append("text")
+          .attr("text-anchor", "middle")
+          .text(function(d){ return formatNumber(d.tot);})
+          .attr("class", "valueLab")
+          .attr("transform", function(d,i) {
+            var c = (d.value - 1) * (pillHeight + pillSpace) + 15;
+            return "translate(" + pillWidth / 2 + "," + c  + ")";
+          });
 
-      g.selectAll("end-title")
-        .data(causeTitles)
-        .enter()
-        .append("text")
-        .attr("class", "title end-title")
-        .attr("transform", function(d,i) {
-          var x = ((pillWidth + yearSpace) * d.index);
-          var y = (d.pos ) * (pillHeight + pillSpace);
-          return "translate(" + x + "," + y + ")";
-        })
-        .attr("text-anchor", function(d) { return d.pos > sideEnds[d.year] ? "left" : "middle"; })
-        .attr("dx", function(d) { return d.pos > sideEnds[d.year] ? pillWidth + 5 : pillWidth / 2;})
-        .attr("dy", -1 * (pillHeight - 1))
-        .text(function(d) { return d.name; });
+        g.selectAll("end-title")
+          .data(causeTitles)
+          .enter()
+          .append("text")
+          .attr("class", "title end-title")
+          .attr("transform", function(d,i) {
+            var x = ((pillWidth + yearSpace) * d.index);
+            var y = (d.pos ) * (pillHeight + pillSpace);
+            return "translate(" + x + "," + y + ")";
+          })
+          .attr("text-anchor", function(d) { return d.pos > sideEnds[d.year] ? "left" : "middle"; })
+          .attr("dx", function(d) { return d.pos > sideEnds[d.year] ? pillWidth + 5 : pillWidth / 2;})
+          .attr("dy", -1 * (pillHeight - 1))
+          .text(function(d) { return d.name; });
 
-      //KEY
-      var mobile;
-      $(".l-box.chart.origins").width() < 800 ? mobile = true : mobile = false;
-      var key = d3.select(".l-box.intro.origins")
-        .append("svg")
-        .attr("height", function(){ return mobile ? 50 : 150 })
-        .attr("width", $(".l-box.origins.intro").width());
+        //KEY
+        var mobile;
+        $(".l-box.chart.origins").width() < 800 ? mobile = true : mobile = false;
+        var key = d3.select(".l-box.intro.origins")
+          .append("svg")
+          .attr("height", function(){ return mobile ? 50 : 150 })
+          .attr("width", $(".l-box.origins.intro").width());
 
-      var mea = key.append("g")
-        .attr("class", "bump_legend");
+        var mea = key.append("g")
+          .attr("class", "bump_legend");
 
-      mea.append("use")
-        .attr("class", "pill-use")
-        .attr("xlink:href", "#mea")
-        .attr("y", 0);
-      mea.append("text").text("Middle east")
-        .attr("x", $("#SYR")[0].getBoundingClientRect().width + 3)
-        .attr("y", 15);
+        mea.append("use")
+          .attr("class", "pill-use")
+          .attr("xlink:href", "#mea")
+          .attr("y", 0);
+        mea.append("text").text("Middle east")
+          .attr("x", $("#SYR")[0].getBoundingClientRect().width + 3)
+          .attr("y", 15);
 
-      var eeu = key.append("g")
-        .attr("class", "bump_legend");
+        var eeu = key.append("g")
+          .attr("class", "bump_legend");
 
-      eeu.append("use")
-        .attr("class", "pill-use")
-        .attr("xlink:href", "#eeu")
-        .attr("y", 30);
-      eeu.append("text").text("Europe")
-        .attr("x", $("#SYR")[0].getBoundingClientRect().width + 3)
-        .attr("y", 45);
+        eeu.append("use")
+          .attr("class", "pill-use")
+          .attr("xlink:href", "#eeu")
+          .attr("y", 30);
+        eeu.append("text").text("Europe")
+          .attr("x", $("#SYR")[0].getBoundingClientRect().width + 3)
+          .attr("y", 45);
 
-      var fea = key.append("g")
-        .attr("class", "bump_legend");
+        var fea = key.append("g")
+          .attr("class", "bump_legend");
 
-      fea.append("use")
-        .attr("class", "pill-use")
-        .attr("xlink:href", "#fea")
-        .attr("y", function(){ return mobile ? 0 : 60 })
-        .attr("x", function(){ return mobile ? 130 : 0 });
-      fea.append("text").text("Asia")
-        .attr("x", function(){ return mobile ? $("#SYR")[0].getBoundingClientRect().width + 133 : $("#SYR")[0].getBoundingClientRect().width + 3 })
-        .attr("y", function(){ return mobile ? 15 : 75 });
+        fea.append("use")
+          .attr("class", "pill-use")
+          .attr("xlink:href", "#fea")
+          .attr("y", function(){ return mobile ? 0 : 60 })
+          .attr("x", function(){ return mobile ? 130 : 0 });
+        fea.append("text").text("Asia")
+          .attr("x", function(){ return mobile ? $("#SYR")[0].getBoundingClientRect().width + 133 : $("#SYR")[0].getBoundingClientRect().width + 3 })
+          .attr("y", function(){ return mobile ? 15 : 75 });
 
-      var afr = key.append("g")
-        .attr("class", "bump_legend");
+        var afr = key.append("g")
+          .attr("class", "bump_legend");
 
-      afr.append("use")
-        .attr("class", "pill-use")
-        .attr("xlink:href", "#afr")
-        .attr("y", function(){ return mobile ? 30 : 90 })
-        .attr("x", function(){ return mobile ? 130 : 0 });
-      afr.append("text").text("Africa")
-        .attr("x", function(){ return mobile ? $("#SYR")[0].getBoundingClientRect().width + 133 : $("#SYR")[0].getBoundingClientRect().width + 3 })
-        .attr("y", function(){ return mobile ? 45 : 105 });
+        afr.append("use")
+          .attr("class", "pill-use")
+          .attr("xlink:href", "#afr")
+          .attr("y", function(){ return mobile ? 30 : 90 })
+          .attr("x", function(){ return mobile ? 130 : 0 });
+        afr.append("text").text("Africa")
+          .attr("x", function(){ return mobile ? $("#SYR")[0].getBoundingClientRect().width + 133 : $("#SYR")[0].getBoundingClientRect().width + 3 })
+          .attr("y", function(){ return mobile ? 45 : 105 });
 
-      var oth = key.append("g")
-        .attr("class", "bump_legend");
+        var oth = key.append("g")
+          .attr("class", "bump_legend");
 
-      oth.append("use")
-        .attr("class", "pill-use")
-        .attr("xlink:href", "#oth")
-        .attr("y", function(){ return mobile ? 0 : 120 })
-        .attr("x", function(){ return mobile ? 230 : 0 });
-      oth.append("text").text("Other")
-        .attr("x", function(){ return mobile ? $("#SYR")[0].getBoundingClientRect().width + 233 : $("#SYR")[0].getBoundingClientRect().width + 3 })
-        .attr("y", function(){ return mobile ? 15 : 135 });
-    }
+        oth.append("use")
+          .attr("class", "pill-use")
+          .attr("xlink:href", "#oth")
+          .attr("y", function(){ return mobile ? 0 : 120 })
+          .attr("x", function(){ return mobile ? 230 : 0 });
+        oth.append("text").text("Other")
+          .attr("x", function(){ return mobile ? $("#SYR")[0].getBoundingClientRect().width + 233 : $("#SYR")[0].getBoundingClientRect().width + 3 })
+          .attr("y", function(){ return mobile ? 15 : 135 });
+      });
+    };
 
 
 
     function mouseover(d,i) {
-      console.log("over");
+      console.log("OEO");
       var leftLab = d3.selectAll(".start-cause").filter(function(e) { return e.id === d.id; });
       var leftLabY = d3.select(leftLab[0][0]).attr("y");
       var rightLab = d3.selectAll(".end-title").filter(function(e) { return e.id === d.id; });
@@ -395,7 +394,9 @@ $(document).ready(function() {
           .attr("x", pillWidth/2)
           .text(rightLab[0][0].innerHTML);
       }
-
+      defs.selectAll(".pill")
+        .classed("highlight", function() {return d3.select(this).attr("id") === d.id;})
+        .classed("unhighlight", function(e) {return e.id !== d.id; });
       g.selectAll(".bump_link")
         .classed("highlight", function(e) {return e.id === d.id; })
         .classed("unhighlight", function(e) {return e.id !== d.id; });
@@ -409,7 +410,8 @@ $(document).ready(function() {
 
     function mouseout(d,i) {
       d3.selectAll(".contry").remove();
-
+      defs.selectAll(".pill").classed("highlight", false);
+      defs.selectAll(".pill").classed("unhighlight", false);
       g.selectAll(".bump_link").classed("highlight", false);
       g.selectAll(".bump_link").classed("unhighlight", false);
       g.selectAll(".start-cause").classed("highlight", false);
@@ -417,6 +419,27 @@ $(document).ready(function() {
       g.selectAll(".valueLab").classed("highl", false);
       g.selectAll(".valueLab").classed("unhighl", false);
     }
+
+    return chart;
+  };
+
+
+  $(document).ready(function() {
+    var plot = chart();
+
+    function display(error, data) {
+      dat = data;
+      var placeholder = d3.select(".l-box.origins:not(.full)");
+      placeholder.append("div").attr("id", "vis");
+      vpwidth = $(window).width();
+      d3.select("#vis").datum(data).call(plot);
+      //resize();
+
+    }
+
+    d3.csv("data/asylum_origins.csv", function(error, data){
+      display(error, data);
+    })
 
   });
 

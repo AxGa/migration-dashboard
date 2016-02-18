@@ -5,7 +5,8 @@ body,.pure-g [class *="pure-u"] {
 
 .pure-g:nth-child(1){
   background-color: #2C4043;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
+  margin-top: 0;
 }
 
 .pure-g:nth-child(2){
@@ -21,6 +22,25 @@ body,.pure-g [class *="pure-u"] {
   float: left;
 }
 
+.pure-g:nth-child(4) .pure-u-lg-2-5{
+  margin-top: 21px;
+}
+
+.pure-g:nth-child(2) .pure-u-lg-4-5{
+  margin-top: 0;
+}
+
+#svg_greece{
+  margin-top: 21px;
+}
+
+#svg_fyrom{
+  margin-top: 21px;
+}
+
+.pure-u-lg-4-5{
+  margin-top: 21px;
+}
 
 .axisY{
   position: absolute;
@@ -164,7 +184,7 @@ body,.pure-g [class *="pure-u"] {
 }
 
 .l-box.counter{
-  border-right: 1px solid #757575;
+  border-right: 1px solid #ededed;
   color: #fff;
 }
 
@@ -204,25 +224,8 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
 .axis.y.demographics .tick line{stroke:none;}
 .axis.y path.domain{stroke:none;}
 
-@-webkit-keyframes text-pulse {
-  0% {-webkit-transform: text-shadow:red 0px 0px 10px;}
-  50% {text-shadow:red 0px 0px 10px;}
-  100% {-webkit-transform: text-shadow:red 0px 0px 10px;}
-}
-
-
-
-@-webkit-keyframes pulse {
-  0% {-webkit-transform: stroke-width:5px;}
-  50% {stroke-width:0px;}
-  100% {-webkit-transform:stroke-width:5px;}
-}
-
-.pulse{
-    fill:red;
-    stroke:black;
-    -webkit-animation: pulse 1s ease-out;
-    -webkit-animation-iteration-count: infinite;
+.pure-g:nth-child(4) .axis line{
+  opacity: 1;
 }
 
 .axis.x.deaths .tick text{
@@ -273,7 +276,7 @@ path.domain{fill:none;stroke:#dadada;stroke-width:1px;shape-rendering:crispEdges
 .arr2016{
   font-size: 72px;
   color: #ff9b0b;
-  border-bottom: 1px solid #757575;
+  border-bottom: 1px solid #ededed;
   padding-bottom: 20px;
   margin-right: 5px;
 }

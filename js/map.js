@@ -198,26 +198,32 @@ function drawMap(circlesData) {
           legend.append("circle")
             .attr("class", "leg_circle")
             .attr("r", radius1(Math.round(d3.max(data, function(d){return d.value}))))
-          legend.append("text").attr("class", "keyTxt").style("text-anchor", "middle").text(formatNumber(Math.round(maxx/10000)*10000)).attr("y", -(rad - 15));
+          legend.append("text").attr("class", "keyTxt").style("text-anchor", "middle").text((Math.round(maxx/10000)*10000)/1000).attr("y", -(rad - 15));
 
           legend.append("circle")
             .attr("class", "leg_circle")
             .attr("cy", (rad - radius1(Math.round(d3.max(data, function(d){return d.value}))/4)))
             .attr("r", radius1(Math.round(d3.max(data, function(d){return d.value}))/4))
-          legend.append("text").attr("class", "keyTxt").style("text-anchor", "middle").text(formatNumber(Math.round((maxx/4)/10000)*10000)).attr("y", (rad - (radius1(Math.round(d3.max(data, function(d){return d.value}))/4)*2)) - 3);
+          legend.append("text").attr("class", "keyTxt").style("text-anchor", "middle").text((Math.round((maxx/4)/10000)*10000)/1000).attr("y", (rad - (radius1(Math.round(d3.max(data, function(d){return d.value}))/4)*2)) + 15);
 
 
          legend.append("circle")
             .attr("class", "leg_circle")
             .attr("cy", (rad - radius1(Math.round(d3.max(data, function(d){return d.value}))/2)))
             .attr("r", radius1(Math.round(d3.max(data, function(d){return d.value}))/2))
-          legend.append("text").attr("class", "keyTxt").style("text-anchor", "middle").text(formatNumber(Math.round((maxx/2)/10000)*10000)).attr("y", (rad - (radius1(Math.round(d3.max(data, function(d){return d.value}))/2)*2))-3);
+          legend.append("text").attr("class", "keyTxt").style("text-anchor", "middle").text((Math.round((maxx/2)/10000)*10000)/1000).attr("y", (rad - (radius1(Math.round(d3.max(data, function(d){return d.value}))/2)*2)) +15);
 
           legend.append("circle")
             .attr("class", "leg_circle")
             .attr("cy", (rad - radius1(Math.round(d3.max(data, function(d){return d.value}))/16)))
             .attr("r", radius1(Math.round(d3.max(data, function(d){return d.value}))/16))
-          legend.append("text").attr("class", "keyTxt").style("text-anchor", "middle").text(formatNumber(Math.round((maxx/16)/10000)*10000)).attr("y", (rad - (radius1(Math.round(d3.max(data, function(d){return d.value}))/16)*2))-3);
+          legend.append("text").attr("class", "keyTxt").style("text-anchor", "middle").text((Math.round((maxx/16)/10000)*10000)/1000).attr("y", (rad - (radius1(Math.round(d3.max(data, function(d){return d.value}))/16)))+3);
+
+          legend.append("text")
+            .attr("class", "legendTitle")
+            .style("text-anchor", "middle")
+            .text("Arrivals in thousands")
+            .attr("y", rad + 16);
       }
 
       function show_details(data, i, element) {

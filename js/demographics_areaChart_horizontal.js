@@ -1,7 +1,6 @@
 var dataHost;
 var forma = d3.format("s");
 var format = d3.format(",d");
-var barHeight = 30;
 function initDemographics(){
 	d3.csv("data/demographics.csv", function(error, data){
 		data = d3.nest()
@@ -54,7 +53,7 @@ function initDemographics(){
 
         var yLeft = d3.scale.ordinal()
             .domain(data[country].map(function(d) { return d.age; }))
-            .rangeRoundBands([height, 0], .5);
+            .rangeRoundPoints([height, 0], .5);
 
         var yLeftAxis = d3.svg.axis()
             .scale(yLeft)
@@ -66,31 +65,9 @@ function initDemographics(){
             .style("text-anchor", "middle")
             .call(yLeftAxis);
 
-        svg.append("text")
-            .attr("x", 0)
-            .attr("y", 10)
-            .style("font-family", "zona_probold")
-            .style("fill", "#666")
-            .text("Males");
-
-        svg.append("text")
-            .attr("x", width-50)
-            .attr("y", 10)
-            .style("font-family", "zona_probold")
-            .style("fill", "#666")
-            .text("Females");
-
-        svg.append("text")
-            .attr("x", width/1.9)
-            .attr("y", 10)
-            .style("font-family", "zona_probold")
-            .style("fill", "#666")
-            .text("Age")
-            .style("text-anchor", "middle");
-
         var yRight = d3.scale.ordinal()
             .domain(data[country].map(function(d) { return d.age; }))
-            .rangeRoundBands([height, 0], .5);
+            .rangeRoundPoints([height, 0], .5);
 
         var yRightAxis = d3.svg.axis()
             .scale(yRight)
@@ -105,10 +82,9 @@ function initDemographics(){
 
         var xLeftAxis = d3.svg.axis()
             .scale(xLeft)
-            .ticks(2)
+            .ticks(3)
             .orient("bottom")
-            .tickFormat(function(d) { return forma(d).replace(/G/, 'bn'); })
-            .outerTickSize(0);
+            .tickFormat(function(d) { return forma(d).replace(/G/, 'bn'); });
 
         var xRight = d3.scale.linear()
             .domain([0, d3.max(data[country], function(d) { return +d.male; })])
@@ -116,48 +92,53 @@ function initDemographics(){
 
         var xRightAxis = d3.svg.axis()
             .scale(xRight)
-            .ticks(2)
+            .ticks(3)
             .orient("bottom")
-            .tickFormat(function(d) { return forma(d).replace(/G/, 'bn'); })
-            .outerTickSize(0);
+            .tickFormat(function(d) { return forma(d).replace(/G/, 'bn'); });
 
 
-        svg.selectAll("demBarLeft")
-            .data(data[country])
-            .enter().append("rect")
-            .attr("class", function(d){ return "left demBar" + d.age.substring(1);})
-            .attr("x", function(d){ return xLeft(d.male); })
-            .attr("y", function(d){ return yLeft(d.age); })
-            .attr("width", function(d){ return xLeft(0) - xLeft(d.male);})
-            .attr("height", barHeight);
+        var areaL = d3.svg.area()
+            .y(function(d) { return yLeft(d.age); })
+            .x0((width/2)-(gAxis.width/2))
+            .x1(function(d) { return xLeft(d.male); });
 
-        svg.selectAll("demBarRight")
-            .data(data[country])
-            .enter().append("rect")
-            .attr("class", function(d){ return "right demBar" + d.age.substring(1);})
-            .attr("x", function(d){ return xRight(0); })
-            .attr("y", function(d){ return yRight(d.age); })
-            .attr("width", function(d){ return xRight(d.female) - xRight(0);})
-            .attr("height", barHeight);
+        var areaR = d3.svg.area()
+            .y(function(d) { return yRight(d.age); })
+            .x0((width/2)+(gAxis.width))
+            .x1(function(d) { return xRight(d.female); });
+        
 
+        svg.append("path")
+            .datum(data[country])
+            .attr("class", "areaL")
+            .attr("d", areaL);
+
+        svg.append("path")
+            .datum(data[country])
+            .attr("class", "areaR")
+            .attr("d", areaR);
 
         svg.selectAll("texts")
             .data(data[country])
           .enter().append("text")
             .attr("class", "num")
             .text(function(d){ return format(d.male); })
-            .attr("x", function(d){ return xLeft(d.male) == 0 ? xLeft(d.male) + 12 : xLeft(d.male) - 6; })
-            .attr("text-anchor", function(d){ return xLeft(d.male) == 0 ? "start" : "end"; })
-            .attr("y", function(d){ return yLeft(d.age) + barHeight/2 + 2; });
+            .attr("x", function(d){ return xLeft(d.male) - 6; })
+            .attr("y", function(d){ return yLeft(d.age) - 6; })
+            .attr("text-anchor", function(d){
+                return this.getBBox().x > 0 ? "end" : "start";
+            });
 
         svg.selectAll("textsF")
             .data(data[country])
           .enter().append("text")
             .attr("class", "numFem")
             .text(function(d){ return format(d.female); })
-            .attr("y", function(d){ return yLeft(d.age) + barHeight/2 + 2; })
-            .attr("x", function(d){ return xRight(d.female) > width -30 ? xRight(d.female) - 12 : xRight(d.female) + 6; })
-            .attr("text-anchor", function(d){ return xRight(d.female) > width -30 ? "end" : "start";});
+            .attr("x", function(d){ return xRight(d.female) + 6; })
+            .attr("y", function(d){ return yLeft(d.age) - 6; })
+            .attr("text-anchor", function(d){
+                return this.getBBox().x > width ? "end" : "start";
+            });
 
         svg.append("g")
             .attr("class", "x axis demoL")
@@ -177,33 +158,26 @@ function initDemographics(){
             xRight.domain([0, d3.max(data[cntry], function(d) { return +d.male; })]);
 
             d3.select("#origin").select("g.y.axis.demographics").call(yLeftAxis);
-            d3.select("#origin").selectAll(".left")
-                .data(data[cntry])
-                .transition().duration(300)
-                .attr("x", function(d){ return xLeft(d.male); })
-                .attr("width", function(d){ return xLeft(0) - xLeft(d.male);});
-
-            d3.select("#origin").selectAll(".right")
-                .data(data[cntry])
-                .transition().duration(300)
-                .attr("width", function(d){ return xRight(d.female) - xRight(0);});
-
+            d3.select("#origin").select(".areaL").datum(data[cntry]).transition().duration(300).attr("d", areaL);
+            d3.select("#origin").select(".areaR").datum(data[cntry]).transition().duration(300).attr("d", areaR);
             d3.select("#origin").select(".x.axis.demoL").call(xLeftAxis);
             d3.select("#origin").select(".x.axis.demoR").call(xRightAxis);
             d3.select("#origin").selectAll(".num")
                 .data(data[cntry])
                 .text(function(d){ return format(d.male); })
-                .attr("text-anchor", function(d){ return xLeft(d.male) == 0 ? "start" : "end"; })
                 .transition().duration(300)
-                .attr("x", function(d){ return xLeft(d.male) == 0 ? xLeft(d.male) + 12 : xLeft(d.male) - 6; });
-                
-
+                .attr("x", function(d){ return xLeft(d.male) - 6; })
+                .attr("text-anchor", function(d){
+                    return this.getBBox().x - this.getBBox().width > 0 ? "end" : "start";
+                });
             d3.select("#origin").selectAll(".numFem")
                 .data(data[cntry])
                 .text(function(d){ return format(d.female); })
                 .transition().duration(300)
-                .attr("x", function(d){ return xRight(d.female) > width -30 ? xRight(d.female) - 12 : xRight(d.female) + 6; })
-                .attr("text-anchor", function(d){ return xRight(d.female) > width -30 ? "end" : "start";});
+                .attr("x", function(d){ return xRight(d.female) + 6; })
+                .attr("text-anchor", function(d){
+                    return this.getBBox().x > width ? "end" : "start";
+                });
 
             //HOST
             yLeft.domain(dataHost[cntry].map(function(d) { return d.age; }));
@@ -212,45 +186,56 @@ function initDemographics(){
             xRight.domain([0, d3.max(dataHost[cntry], function(d) { return +d.male > +d.female ? +d.male : +d.female; })]);
 
 	        d3.select("#host").select("g.y.axis.demographics").call(yLeftAxis);
-
-            d3.select("#host").selectAll(".left")
-                .data(dataHost[cntry])
-                .transition().duration(300)
-                .attr("x", function(d){ return xLeft(d.male); })
-                .attr("width", function(d){ return xLeft(0) - xLeft(d.male);});
-
-            d3.select("#host").selectAll(".right")
-                .data(dataHost[cntry])
-                .transition().duration(300)
-                .attr("width", function(d){ return xRight(d.female) - xRight(0);});
-
+	        d3.select("#host").select(".areaL").datum(dataHost[cntry]).transition().duration(300).attr("d", areaL);
+	        d3.select("#host").select(".areaR").datum(dataHost[cntry]).transition().duration(300).attr("d", areaR);
 	        d3.select("#host").select(".x.axis.demoL").call(xLeftAxis);
 	        d3.select("#host").select(".x.axis.demoR").call(xRightAxis);
             d3.select("#host").selectAll(".num")
                 .data(dataHost[cntry])
                 .text(function(d){ return format(d.male); })
                 .transition().duration(300)
-                .attr("x", function(d){ return xLeft(d.male) <= 30 ? xLeft(d.male) + 12 : xLeft(d.male) - 6; })
-                .attr("text-anchor", function(d){ return xLeft(d.male) <= 30 ? "start" : "end"; });
-
+                .attr("x", function(d){ return xLeft(d.male) - 6; })
+                .attr("text-anchor", function(d){
+                    return this.getBBox().x - this.getBBox().width > 0 ? "end" : "start";
+                });
             d3.select("#host").selectAll(".numFem")
                 .data(dataHost[cntry])
                 .text(function(d){ return format(d.female); })
                 .transition().duration(300)
-                .attr("x", function(d){ return xRight(d.female) > width -30 ? xRight(d.female) - 12 : xRight(d.female) + 6; })
-                .attr("text-anchor", function(d){ return xRight(d.female) > width -30 ? "end" : "start";});
+                .attr("x", function(d){ return xRight(d.female) + 6; })
+                .attr("text-anchor", function(d){
+                    return this.getBBox().x + this.getBBox().width > width ? "end" : "start";
+                });
             country = cntry;
 	   }
+
+	      //--------MOUSEOVER THE CHARTS----------
+	      var focus = svg.append("g")
+	          .attr("class", "focus")
+              .attr("id", function(){ return typeOfCountry == "origin" ? "focusOr" : "focusHo"})
+	          .style("display", "none");
+
+	      focus.append("circle")
+	          .attr("r", 5.5);
+
+            var focusFem = svg.append("g")
+                  .attr("class", "focus")
+                  .attr("id", function(){ return typeOfCountry == "origin" ? "focusFemOr" : "focusFemHo"})
+                  .style("display", "none");
+
+              focusFem.append("circle")
+                  .attr("r", 5.5);
 
 	      // console.log("infobox");
 	      svg.append("rect")
 	          .attr("class", "overlay")
 	          .attr("width", width)
 	          .attr("height", height)
-	          .on("mouseout", function() { 
-                d3.selectAll(".left").style("opacity", 1);
-                d3.selectAll(".right").style("opacity", 1);
+	          .on("mouseover", function() { 
+                focus.style("display", null);
+                focusFem.style("display", null);
             })
+	          .on("mouseout", function() { d3.selectAll(".focus").style("display", "none"); })
 	          .on("mousemove", mousemove)
 	          .on("click", mousemove);
 
@@ -258,14 +243,22 @@ function initDemographics(){
 	      //focus.attr("transform", "translate(" + 1.5 + "," + y(3800000) + ")");
 	      function mousemove() {
             country = $( "select#country" ).val();
-            d3.selectAll(".left").style("opacity", 1);
-            d3.selectAll(".right").style("opacity", 1);
-            
+
+            if (typeOfCountry == "origin"){
+                yLeft.domain(data[country].map(function(d) { return d.age; }));
+                xLeft.domain([0, d3.max(data[country], function(d) { return +d.male; })]);
+                xRight.domain([0, d3.max(data[country], function(d) { return +d.male; })]);
+            }
+            else{
+                yLeft.domain(dataHost[country].map(function(d) { return d.age; }));
+                xLeft.domain([0, d3.max(dataHost[country], function(d) { return +d.male > +d.female ? +d.male : +d.female; })]);
+                xRight.domain([0, d3.max(dataHost[country], function(d) { return +d.male > +d.female ? +d.male : +d.female; })]);
+            }
             var xPos = d3.mouse(this)[1];
             var points = yLeft.range();
             var space = points[1]-points[0];
             var j;
-            for(j=0; xPos < (points[j] + space/4); j++) {
+            for(j=0; xPos < (points[j] + space/2); j++) {
 
             }
 
@@ -274,8 +267,11 @@ function initDemographics(){
 	            d0 = data[country][j],
 	            d1 = data[country][j],
 	            d = y0 - d0.age > d1.age - y0 ? d1 : d0;
+            d3.select("#focusOr").attr("transform", "translate(" + xLeft(d.male) + "," + (yLeft(d.age) + 1.5) + ")");
+            d3.select("#focusHo").attr("transform", "translate(" + xLeft(d.male) + "," + (yLeft(d.age) + 1.5) + ")");
 
-            d3.selectAll(".demBar" + d.age.substring(1)).style("opacity", 0.5);
+            d3.select("#focusFemOr").attr("transform", "translate(" + xRight(d.female) + "," + (yLeft(d.age) + 1.5) + ")");
+            d3.select("#focusFemHo").attr("transform", "translate(" + xRight(d.female) + "," + (yLeft(d.age) + 1.5) + ")");
 
 	      }
 			

@@ -153,7 +153,15 @@ function initSankey(){
         .attr("transform", null)
         .text(function(d) { return d.name; })
         .style("font-size", function(){ return textSize = textScale(this.__data__.value).toString() + "%"; })
-        .style("opacity", function(){ return this.__data__.value > 35000 ? 1 : 0; })
+        .style("opacity", function(){ 
+          if(this.__data__.x > 20 && this.__data__.value > 35000){
+            return 1;
+          }
+          else if(this.__data__.x < 20 && this.__data__.value > 20000){
+            return 1;
+          }
+          else return 0;
+        })
       .filter(function(d) { return d.x < width / 2; })
         .attr("x", 6 + sankey.nodeWidth())
         .attr("text-anchor", "start");

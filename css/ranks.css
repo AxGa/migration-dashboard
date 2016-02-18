@@ -67,10 +67,6 @@ a, a:visited, a:focus {
   opacity: 0.5;
 }
 
-.highlight .pill-outline{
-  stroke: black;
-  stroke-width:2;
-}
 
 .start-cause {
   -webkit-transition: opacity .25s ease-in-out;

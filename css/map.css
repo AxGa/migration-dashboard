@@ -187,6 +187,10 @@ svg stroke{
 
 }
 
+.legendTitle{
+  font-family: "zona_probold"
+}
+
 .leg_circle{
   fill: none;
   stroke: #ff9b0b;
@@ -195,7 +199,8 @@ svg stroke{
 }
 
 .sea{
-  fill: #4bc6df;
+  fill: #757575;
+  font-size: 14px;
 }
 
 .keyTxt{

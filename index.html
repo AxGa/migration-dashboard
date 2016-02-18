@@ -35,23 +35,6 @@
 <script src="js/demographics.js"></script>
 <script src="js/countries.js"></script>
 
-
-<!-- <div class="header" style="text-align:center;">
-    <div class="logo">
-        <img src="logo.svg"/>
-        <span>Open </span><span> Migration</span>
-        <div class="swathe">
-            <div>Our mission</div>
-            <div>Right of asylum</div>
-            <div>Border policies</div>
-            <div>Immigration & integration</div>
-            <div>Data</div>
-            <div>Features</div>
-        </div>
-    </div>
-    <h1>Live data</h1>
-</div> -->
-
 <div class="content">
 </div>
 
@@ -148,9 +131,6 @@ function initDashboard(data){
 
     function sizeChange(){
       
-      //if(vpwidth > 900){
-        //d3.select("#svgCont").style("overflow-x", "visible");
-        // clientWidth = document.getElementById('placeholder').clientWidth;
         width = d3.select('.l-box.chart.dailyarrivals').node().getBoundingClientRect().width-(margin.left+margin.right+4);
         height = d3.select('.l-box.intro.dailyarrivals').node().getBoundingClientRect().height-margin.bottom;
         x.range([0, width]);
@@ -163,16 +143,6 @@ function initDashboard(data){
         drawChart(dt.slovenia, "slovenia");
         drawChart(dt.austria, "austria");
         drawChart(dt.germany, "germany");
-        // vpwidth = $(window).width();
-      //}
-    /*  else{
-        d3.select("#svgCont").style("overflow-x", "scroll").style("overflow-y", "hidden");
-        width = 2200;
-        x.range([0, width]);
-        xMonth.range([0, width]);
-        drawChart(dataset);
-        vpwidth = $(window).width();
-      }*/
       
     }
 
@@ -253,11 +223,6 @@ function initDashboard(data){
       
       y = d3.scale.linear().range([height, 0]);
       y.domain([0, max]);
-      var xAxis = d3.svg.axis()
-          .scale(x)
-          .orient("bottom")
-          .ticks(width < 250 ? 5:10)
-          .tickFormat(d3.time.format("%d"));
 
       var xAxisMonth = d3.svg.axis()
           .scale(xMonth)
@@ -317,26 +282,20 @@ function initDashboard(data){
       // xMonth.domain([data[55].date, data[todayIndx].date])
       xMonth.domain([new Date(2015,8,1), new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)]);
 
-      svg.append("g")
-          .attr("class", "x axis")
-          .attr("transform", "translate(0," + height + ")")
-          .call(xAxis)
-        .selectAll("text")
-          .style("fill", "#999")
-          .style("text-anchor", "middle");
 
       var monthAxis = svg.append("g")
           .attr("class", "month axis")
           .attr("transform", "translate(0," + height + ")")
           .call(xAxisMonth)
         .selectAll(".tick text")
-          .attr("y", 20)
+          .attr("y", 10)
           .attr("x", ($(".month.axis > .domain")[0].getBoundingClientRect().width/d3.select(".month.axis").selectAll(".tick")[0].length)/2)
           .style("fill", "#999")
           .style("text-anchor", "middle");
 
       d3.selectAll(".month").selectAll(".tick line")
-          .attr("y1", 20);
+          .attr("y1", 10)
+          .attr("y2", 20);
 
       axisY.append("svg")
         .attr("width", 43)
@@ -433,7 +392,7 @@ function initDashboard(data){
       }
 
       function drawArea(data){
-        var margin = {top: 20, right: 10, bottom: 20, left: 50},
+        var margin = {top: 20, right: 10, bottom: 20, left: 10},
             width = $(".l-box.counter:not(.full)").width() - margin.left - margin.right,
             height = 230 - margin.top - margin.bottom;
 
@@ -447,11 +406,8 @@ function initDashboard(data){
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            .orient("bottom");
-
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
+            .orient("bottom")
+            .outerTickSize(0);
 
         d3.select(".l-box.counter:not(.full)").append("div").attr("class", "titleLast").html("Dead/missing").style("margin-top", "0");
 
@@ -486,9 +442,6 @@ function initDashboard(data){
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
 
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
       }
 
       function drawArrByMonth(data){
@@ -519,7 +472,10 @@ function initDashboard(data){
 
 String.prototype.ucfirst = function()
 {
-    return this.charAt(0).toUpperCase() + this.substr(1);
+    if(this.charAt(0) == "f"){
+      return this.substr(0).toUpperCase();
+    }
+    else return this.charAt(0).toUpperCase() + this.substr(1);
 }
 })
 </script>
