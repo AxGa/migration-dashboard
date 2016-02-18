@@ -394,7 +394,7 @@ function initDashboard(data){
       function drawArea(data){
         var margin = {top: 20, right: 10, bottom: 20, left: 10},
             width = $(".l-box.counter:not(.full)").width() - margin.left - margin.right,
-            height = 230 - margin.top - margin.bottom;
+            height = 225 - margin.top - margin.bottom;
 
         var x = d3.scale.ordinal()
             .domain(data.map(function(d) { return d.year; }))

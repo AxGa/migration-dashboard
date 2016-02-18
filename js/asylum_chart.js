@@ -132,7 +132,7 @@ function initSankey(){
         .data(nodes.sort(function (a,b) {return d3.ascending(a.value, b.value); }))
       .enter().append("g")
         .attr("class", "node")
-        .attr("id", function(d){ return continentStrip(d.name); })
+        .attr("id", function(d){ return "sank_" + continentStrip(d.name); })
         .attr("transform", function(d) {
         return "translate(" + d.x + "," + d.y + ")"; });
 
@@ -169,7 +169,7 @@ function initSankey(){
 
     
   function nodeMouseover(node, i){
-    var col = d3.select("#" + node.name).select("rect").style("fill");
+    var col = d3.select("#sank_" + node.name).select("rect").style("fill");
     d3.selectAll(".link").style("stroke", col).style("stroke-opacity", 0.2);
     d3.selectAll(".link").filter(function(d) { return d.source.name != graph.nodes[i].name && d.target.name != graph.nodes[i].name }).style("stroke-opacity", 0.0).style("stroke", "#000");
     d3.select(this).style("stroke", "#000");
@@ -236,8 +236,8 @@ function initSankey(){
 
     var heightSum = tipPos.top + $(".sank_tooltip").height();
     var tipTop;
-    d3.select("#" + node.name).select("rect")[0][0].__data__.y < 405 ?
-    tipTop = d3.select("#" + node.name).select("rect")[0][0].__data__.y + (d3.select("#" + node.name).select("rect")[0][0].__data__.dy/2) :
+    d3.select("#sank_" + node.name).select("rect")[0][0].__data__.y < 405 ?
+    tipTop = d3.select("#sank_" + node.name).select("rect")[0][0].__data__.y + (d3.select("#sank_" + node.name).select("rect")[0][0].__data__.dy/2) :
     tipTop = 400;
     //heightSum > $("#chart").height() - 30 ? tipTop = tipPos.top - (heightSum - $("#chart").height()) - 70 : tipTop = tipPos.top;
     
